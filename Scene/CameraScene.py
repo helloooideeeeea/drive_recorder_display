@@ -1,29 +1,32 @@
 import pygame
 from Scene import Scene
-import cv2
 from pygame.locals import *
 from Constraints import *
+import cv2
+
 
 class CameraScene(Scene):
 
     CAMERA_ID_1 = 0
     CAMERA_ID_2 = 1
 
-    sprite_group = None
+    window = None
     screen = None
+    sprite_group = None
 
-    def __init__(self, screen):
+    def __init__(self, window):
 
-        self.screen = screen
-
+        self.window = window
+        self.screen = window.screen
         self.sprite_group = pygame.sprite.RenderUpdates()
 
-        btn = self.FinishButton()
+        btn = self.FinishButton(self)
         self.sprite_group.add(btn)
 
         self.frame0 = cv2.VideoCapture(self.CAMERA_ID_1)
         self.frame1 = cv2.VideoCapture(self.CAMERA_ID_2)
 
+    # Windowクラスが実行するループ
     def loop(self):
 
         self.screen.fill((255, 255, 255))  # 背景色
@@ -45,13 +48,23 @@ class CameraScene(Scene):
         for sprite in self.sprite_group:
             sprite.draw(self.screen)
 
-    def click_notify(self, pos):
+    # Windowクラスからタップ位置のお知らせがくる
+    def click_notify(self, position):
         for s in self.sprite_group:
-            if s.rect.collidepoint(pos):
+            if s.rect.collidepoint(position):
                 s.clicked()
                 break
 
+    # Windowクラスからアプリケーション終了のお知らせがくる
     def before_finish(self):
+        self.defer()
+
+    # Finishボタンがクリックされたら、シーンの切り替え命令を出す
+    def finish_button_clicked(self):
+        self.window.switch_scene(SETTING_SCENE_NAME)
+        self.defer()
+
+    def defer(self):
         self.frame0.release()
         self.frame1.release()
         cv2.destroyAllWindows()
@@ -63,11 +76,13 @@ class CameraScene(Scene):
         pygame_image = pygame.image.frombuffer(opencv_image.tobytes(), shape, 'RGB')
         return pygame_image
 
+    # Finishボタンの実装
     class FinishButton(pygame.sprite.Sprite):
         content = None
         content_rect = None
         background = None
-        background_rect = None
+
+        scene = None
 
         WIDTH = 100
         HEIGHT = 30
@@ -81,8 +96,11 @@ class CameraScene(Scene):
             center_y = center_position[1]
             return center_x - font_width / 2, center_y - font_height / 2
 
-        def __init__(self, *groups):
+        def __init__(self, scene, *groups):
             super().__init__(*groups)
+
+            self.scene = scene
+
             font = pygame.font.SysFont(None, 16)
             font_color = (0, 0, 0)
             str = "Finish"
@@ -103,4 +121,4 @@ class CameraScene(Scene):
             screen.blit(self.content, self.content_rect)
 
         def clicked(self):
-            print("clicked")
+            self.scene.finish_button_clicked()

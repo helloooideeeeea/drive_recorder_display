@@ -8,7 +8,7 @@ class Scene(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
-    def click_notify(self, pos):
+    def click_notify(self, position):
         raise NotImplementedError()
 
     @abstractmethod
