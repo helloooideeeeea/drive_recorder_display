@@ -3,4 +3,5 @@ lib
 include
 bin
 pyvenv.cfg
+__pycache__
 
