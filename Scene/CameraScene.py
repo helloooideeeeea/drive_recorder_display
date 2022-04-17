@@ -71,6 +71,15 @@ class CameraScene(Scene):
 
         WIDTH = 100
         HEIGHT = 30
+        MARGIN_BOTTOM = 20
+
+        @staticmethod
+        def string_center(center_position, font_size):
+            font_width = font_size[0]
+            font_height = font_size[1]
+            center_x = center_position[0]
+            center_y = center_position[1]
+            return center_x - font_width / 2, center_y - font_height / 2
 
         def __init__(self, *groups):
             super().__init__(*groups)
@@ -78,13 +87,15 @@ class CameraScene(Scene):
             font_color = (0, 0, 0)
             str = "Finish"
             self.content = font.render(str, True, font_color)
-            # TODO 座標変換をわかりやすくする
-            self.content_rect = Rect(WINDOW_WIDTH / 2 - self.WIDTH / 2 + font.size(str)[0], CAPTURE_IMAGE_HEIGHT + 10 + font.size(str)[1]/2, self.WIDTH,
-                                        self.HEIGHT)
+
+            font_size = font.size(str)
+            content_center = self.string_center((WINDOW_WIDTH/2, CAPTURE_IMAGE_HEIGHT + self.MARGIN_BOTTOM + self.HEIGHT/2), font_size)
+            self.content_rect = Rect(content_center[0], content_center[1], font_size[0], font_size[1])
 
             self.background = pygame.Surface((self.WIDTH, self.HEIGHT))
             self.background.fill(pygame.Color('dodgerblue1'))
-            self.rect = Rect(WINDOW_WIDTH / 2 - self.WIDTH / 2, CAPTURE_IMAGE_HEIGHT + 10, self.WIDTH,
+            # box center
+            self.rect = Rect(WINDOW_WIDTH / 2 - self.WIDTH / 2, CAPTURE_IMAGE_HEIGHT + self.MARGIN_BOTTOM, self.WIDTH,
                                         self.HEIGHT)
 
         def draw(self, screen):
