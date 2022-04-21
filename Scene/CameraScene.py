@@ -7,9 +7,6 @@ import cv2
 
 class CameraScene(Scene):
 
-    CAMERA_ID_1 = 0
-    CAMERA_ID_2 = 1
-
     window = None
     screen = None
     sprite_group = None
@@ -23,8 +20,8 @@ class CameraScene(Scene):
         btn = self.FinishButton(self)
         self.sprite_group.add(btn)
 
-        self.frame0 = cv2.VideoCapture(self.CAMERA_ID_1)
-        # self.frame1 = cv2.VideoCapture(self.CAMERA_ID_2)
+        self.frame0 = cv2.VideoCapture(CAMERA_ID_1)
+        self.frame1 = cv2.VideoCapture(CAMERA_ID_2)
 
     # Windowクラスが実行するループ
     def loop(self):
@@ -32,18 +29,18 @@ class CameraScene(Scene):
         self.screen.fill((255, 255, 255))  # 背景色
 
         ret0, img0 = self.frame0.read()
-        # ret1, img1 = self.frame1.read()
+        ret1, img1 = self.frame1.read()
 
         #
         img0 = cv2.resize(img0, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
-        # img1 = cv2.resize(img1, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
+        img1 = cv2.resize(img1, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
 
         #
         pygame_image1 = self.convert_opencv_img_to_pygame(opencv_image=img0)
-        # pygame_image2 = self.convert_opencv_img_to_pygame(opencv_image=img1)
+        pygame_image2 = self.convert_opencv_img_to_pygame(opencv_image=img1)
 
         self.screen.blit(pygame_image1, (0, 0))
-        # self.screen.blit(pygame_image2, (CAPTURE_IMAGE_WIDTH, 0))
+        self.screen.blit(pygame_image2, (CAPTURE_IMAGE_WIDTH, 0))
 
         for sprite in self.sprite_group:
             sprite.draw(self.screen)
@@ -66,7 +63,7 @@ class CameraScene(Scene):
 
     def defer(self):
         self.frame0.release()
-        # self.frame1.release()
+        self.frame1.release()
         cv2.destroyAllWindows()
 
     @staticmethod
