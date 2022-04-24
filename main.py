@@ -23,7 +23,7 @@ class WindowLoop:
         clock = pygame.time.Clock()
         while self.running:
 
-            clock.tick(30)  # 1秒間に30フレーム
+            clock.tick(20)  # 1秒間に20フレーム
 
             self.current_scene.loop()
 
