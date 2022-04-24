@@ -22,7 +22,6 @@ class CameraScene(Scene):
 
         self.frame0 = cv2.VideoCapture(CAMERA_ID_1)
         self.frame1 = cv2.VideoCapture(CAMERA_ID_2)
-        self.frame2 = cv2.VideoCapture(CAMERA_ID_3)
 
     # Windowクラスが実行するループ
     def loop(self):
@@ -31,21 +30,17 @@ class CameraScene(Scene):
 
         ret0, img0 = self.frame0.read()
         ret1, img1 = self.frame1.read()
-        ret2, img2 = self.frame2.read()
 
         #
         img0 = cv2.resize(img0, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
         img1 = cv2.resize(img1, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
-        img2 = cv2.resize(img2, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
 
         #
         pygame_image1 = self.convert_opencv_img_to_pygame(opencv_image=img0)
         pygame_image2 = self.convert_opencv_img_to_pygame(opencv_image=img1)
-        pygame_image3 = self.convert_opencv_img_to_pygame(opencv_image=img2)
 
         self.screen.blit(pygame_image1, (0, 0))
         self.screen.blit(pygame_image2, (CAPTURE_IMAGE_WIDTH, 0))
-        self.screen.blit(pygame_image3, (0, CAPTURE_IMAGE_HEIGHT))
 
         for sprite in self.sprite_group:
             sprite.draw(self.screen)
@@ -69,7 +64,6 @@ class CameraScene(Scene):
     def defer(self):
         self.frame0.release()
         self.frame1.release()
-        self.frame2.release()
         cv2.destroyAllWindows()
 
     @staticmethod
@@ -116,7 +110,7 @@ class CameraScene(Scene):
             self.background = pygame.Surface((self.WIDTH, self.HEIGHT))
             self.background.fill(pygame.Color('dodgerblue1'))
             # box center
-            self.rect = Rect(WINDOW_WIDTH / 3 - self.WIDTH / 2, CAPTURE_IMAGE_HEIGHT + self.MARGIN_BOTTOM, self.WIDTH,
+            self.rect = Rect(WINDOW_WIDTH / 2 - self.WIDTH / 2, CAPTURE_IMAGE_HEIGHT + self.MARGIN_BOTTOM, self.WIDTH,
                                         self.HEIGHT)
 
         def draw(self, screen):
