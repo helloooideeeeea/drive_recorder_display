@@ -6,10 +6,30 @@ import cv2
 
 
 class CameraScene(Scene):
-
     window = None
     screen = None
     sprite_group = None
+
+    @staticmethod
+    def decode_fourcc(v):
+        v = int(v)
+        return "".join([chr((v >> 8 * i) & 0xFF) for i in range(4)])
+
+    @staticmethod
+    def camera_setting(frame):
+
+        # フォーマット・解像度・FPSの設定
+        frame.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('Y', 'U', 'Y', 'V'))
+        frame.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        frame.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        frame.set(cv2.CAP_PROP_FPS, 20)
+
+        # フォーマット・解像度・FPSの取得
+        fourcc = CameraScene.decode_fourcc(frame.get(cv2.CAP_PROP_FOURCC))
+        width = frame.get(cv2.CAP_PROP_FRAME_WIDTH)
+        height = frame.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        fps = frame.get(cv2.CAP_PROP_FPS)
+        print("fourcc:{} fps:{}　width:{}　height:{}".format(fourcc, fps, width, height))
 
     def __init__(self, window):
 
@@ -22,6 +42,9 @@ class CameraScene(Scene):
 
         self.frame0 = cv2.VideoCapture(CAMERA_ID_1)
         self.frame1 = cv2.VideoCapture(CAMERA_ID_2)
+
+        self.camera_setting(frame=self.frame0)
+        self.camera_setting(frame=self.frame1)
 
     # Windowクラスが実行するループ
     def loop(self):
@@ -104,14 +127,15 @@ class CameraScene(Scene):
             self.content = font.render(str, True, font_color)
 
             font_size = font.size(str)
-            content_center = self.string_center((WINDOW_WIDTH/2, CAPTURE_IMAGE_HEIGHT + self.MARGIN_BOTTOM + self.HEIGHT/2), font_size)
+            content_center = self.string_center(
+                (WINDOW_WIDTH / 2, CAPTURE_IMAGE_HEIGHT + self.MARGIN_BOTTOM + self.HEIGHT / 2), font_size)
             self.content_rect = Rect(content_center[0], content_center[1], font_size[0], font_size[1])
 
             self.background = pygame.Surface((self.WIDTH, self.HEIGHT))
             self.background.fill(pygame.Color('dodgerblue1'))
             # box center
             self.rect = Rect(WINDOW_WIDTH / 2 - self.WIDTH / 2, CAPTURE_IMAGE_HEIGHT + self.MARGIN_BOTTOM, self.WIDTH,
-                                        self.HEIGHT)
+                             self.HEIGHT)
 
         def draw(self, screen):
             screen.blit(self.background, self.rect)
