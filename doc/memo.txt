@@ -1,0 +1,36 @@
+単体アプリケーション起動
+
+vim /etc/xdg/lxsession/LXDE/autostart
+
+#@lxpanel --profile LXDE
+@pcmanfm --desktop --profile LXDE
+#@xscreensaver -no-splash
+
+vim /etc/xdg/lxsession/LXDE-pi/autostart
+
+#@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
+#@xscreensaver -no-splash
+
+sudo tee -a /etc/systemd/system/my_app.service > /dev/null << EOT
+[Unit]
+Description=Start MY_APPLICATION
+After=default.target
+Wants=default.target
+
+[Service]
+Environment=USER_NAME=yasushi-sakita
+User=${USER_NAME}
+Group=${USER_NAME}
+Environment=DISPLAY=:0.0
+Environment=XAUTORITY=/home/${USER_NAME}/.Xauthority
+ExecStart=/usr/bin/python3 /home/${USER_NAME}/dev/python/drive_recorder_display/main.py
+Type=idle
+
+[Install]
+WantedBy=default.target
+EOT
+
+
+sudo /usr/bin/systemctl daemon-reload
+sudo /usr/bin/systemctl enable my_app.service
