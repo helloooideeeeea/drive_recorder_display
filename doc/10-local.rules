@@ -1,0 +1,7 @@
+# /etc/udev/rules.d/10-local.rules
+
+#web camera for ELECOM 8MP Webcam: ELECOM 8MP W
+KERNEL=="video*",SUBSYSTEM=="video4linux",SUBSYSTEMS=="usb",ATTRS{idProduct}=="701c",ATTRS{idVendor}=="056e",SYMLINK+="video-inside-camera"
+#web camera for USB 2.0 Camera: USB Camera
+KERNEL=="video*",SUBSYSTEM=="video4linux",SUBSYSTEMS=="usb",ATTRS{idProduct}=="6366",ATTRS{idVendor}=="0c45",SYMLINK+="video-outside-camera"
+
