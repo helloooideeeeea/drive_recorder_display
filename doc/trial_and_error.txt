@@ -1,22 +1,29 @@
+サウンドカードデバイスネーム確認
+cat /proc/asound/cards
+arecord -l
+
+カメラのSYSFSを確認
+ll /sys/class/video4linux
+
 カメラリスト
 v4l2-ctl --list-devices
 
 対応している色表現フォーマット
-v4l2-ctl -d /dev/video-inside-camera --list-formats
+v4l2-ctl -d /dev/video-inside --list-formats
 
 対応している解像度等
-v4l2-ctl -d /dev/video-inside-camera --list-formats-ext
+v4l2-ctl -d /dev/video-inside --list-formats-ext
 
 解像度変更等
-v4l2-ctl -d /dev/video-inside-camera -v width=1920,height=1080,pixelformat=MJPG
-v4l2-ctl -d /dev/video-outside-camera -v width=1920,height=1080,pixelformat=MJPG
+v4l2-ctl -d /dev/video-inside -v width=1920,height=1080,pixelformat=MJPG
+v4l2-ctl -d /dev/video-outside -v width=1920,height=1080,pixelformat=MJPG
 
 フレームレート
-v4l2-ctl -d /dev/video-inside-camera -p 25
-v4l2-ctl -d /dev/video-outside-camera -p 30
+v4l2-ctl -d /dev/video-inside -p 25
+v4l2-ctl -d /dev/video-outside -p 30
 
 詳細
-v4l2-ctl -d /dev/video-inside-camera --all
+v4l2-ctl -d /dev/video-inside --all
 
 仮想カメラデバイスを登録(不採用)
 sudo modprobe v4l2loopback
@@ -30,19 +37,18 @@ sudo modprobe v4l2loopback video_nr=66,77,88,99
 sudo modprobe -r v4l2loopback
 
 カメラデバイスのRGBを仮想カメラデバイスに送る（物理デバイスは、マルチプロセスをブロックするため。不採用）
-gst-launch-1.0 v4l2src device=/dev/video-inside-camera ! image/jpeg,width=1920,height=1080,framerate=25/1 ! jpegdec ! videoconvert ! video/x-raw,format=I420,width=1920,height=1080,framerate=25/1 ! v4l2sink device=/dev/video66
+gst-launch-1.0 v4l2src device=/dev/video-inside ! image/jpeg,width=1920,height=1080,framerate=25/1 ! jpegdec ! videoconvert ! video/x-raw,format=I420,width=1920,height=1080,framerate=25/1 ! v4l2sink device=/dev/video66
 
 マルチで送る場合（こっちを採用）
-gst-launch-1.0 v4l2src device=/dev/video-inside-camera ! image/jpeg,width=1920,height=1080,framerate=25/1 ! jpegdec ! videoconvert ! video/x-raw,format=I420,width=1920,height=1080,framerate=25/1 ! tee name=tp tp. ! queue ! v4l2sink device=/dev/video66 tp. ! queue ! v4l2sink device=/dev/video77
-gst-launch-1.0 v4l2src device=/dev/video-outside-camera ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! video/x-raw,format=I420,width=1920,height=1080,framerate=30/1 ! tee name=tp tp. ! queue ! v4l2sink device=/dev/video88 tp. ! queue ! v4l2sink device=/dev/video99
+gst-launch-1.0 v4l2src device=/dev/video-inside ! image/jpeg,width=1920,height=1080,framerate=25/1 ! jpegdec ! videoconvert ! video/x-raw,format=I420,width=1920,height=1080,framerate=25/1 ! tee name=tp tp. ! queue ! v4l2sink device=/dev/video66 tp. ! queue ! v4l2sink device=/dev/video77
+gst-launch-1.0 v4l2src device=/dev/video-outside ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! video/x-raw,format=I420,width=1920,height=1080,framerate=30/1 ! tee name=tp tp. ! queue ! v4l2sink device=/dev/video88 tp. ! queue ! v4l2sink device=/dev/video99
 
 
 完成形（動画音声ミックス、ソフトウェアエンコード。不採用）
-gst-launch-1.0 -e v4l2src device="/dev/video66" ! queue ! videoconvert ! x264enc tune=zerolatency ! mux. alsasrc device="plughw:3" ! queue ! audioconvert ! voaacenc ! mp4mux name=mux ! filesink location=test5.mp4 sync=false
+gst-launch-1.0 -e v4l2src device="/dev/video66" ! queue ! videoconvert ! x264enc tune=zerolatency ! mux. alsasrc device="hw:audio-inside,0" ! queue ! audioconvert ! voaacenc ! mp4mux name=mux ! filesink location=test5.mp4 sync=false
 
 完成系（動画音声ミックス。ハードウェアエンコード。）
-gst-launch-1.0 -e v4l2src device="/dev/video66" ! queue ! videoconvert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! mux. alsasrc device="plughw:3" ! queue ! audioconvert ! voaacenc ! mp4mux name=mux ! filesink location=inside_camera.mp4 sync=false
-
+gst-launch-1.0 -e v4l2src device="/dev/video66" ! queue ! videoconvert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! mux. alsasrc device="hw:audio-inside,0" ! queue ! audioconvert ! voaacenc ! mp4mux name=mux ! filesink location=inside_camera.mp4 sync=false
 
 動画のみ（ハードウェアエンコード。）
 gst-launch-1.0 -e v4l2src device="/dev/video88" ! videoconvert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! mp4mux name=mux ! filesink location=test5.mp4 sync=false
