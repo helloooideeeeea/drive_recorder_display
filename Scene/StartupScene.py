@@ -104,7 +104,7 @@ class StartupScene(Scene):
         for sprite in self.sprite_group:
             sprite.draw(self.screen)
 
-        time.sleep(3)
+        pygame.time.wait(3000)
 
 
     def click_notify(self, position):
