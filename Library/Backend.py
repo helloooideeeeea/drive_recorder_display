@@ -7,6 +7,16 @@ import psutil
 
 class Backend:
 
+    failed_counter = 0
+
+    def is_arrive_process_with_failed_count(self, command):
+        if Backend.is_arrive_process(command):
+            self.failed_counter = 0
+            return True
+        else:
+            self.failed_counter += 1
+            return False
+
     @staticmethod
     def kill_process(command):
         pass
@@ -85,7 +95,7 @@ class Backend:
     @staticmethod
     def launch_process(command):
         subprocess.Popen(Backend.nohup_wrap_command(command), shell=True)
-        time.sleep(1)
+        time.sleep(2)
 
     @staticmethod
     def nohup_wrap_command(command):
