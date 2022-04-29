@@ -65,7 +65,7 @@ class Backend:
     def create_inside_recording_command():
         path = create_video_path('inside')
         command = \
-            f"gst-launch-1.0 -e v4l2src device={OUTSIDE_CAMERA_RECORDING_DEVICE} ! " \
+            f"gst-launch-1.0 -e v4l2src device={INSIDE_CAMERA_RECORDING_DEVICE} ! " \
             f"videoconvert ! " \
             f"v4l2h264enc ! " \
             f"'video/x-h264,level=(string)4' ! " \
