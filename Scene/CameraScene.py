@@ -4,6 +4,7 @@ from pygame.locals import *
 from Constraints import *
 import cv2
 import os
+from Library.UI import UI
 from dotenv import load_dotenv
 load_dotenv() #.env読込
 
@@ -130,7 +131,7 @@ class CameraScene(Scene):
             self.content = font.render(str, True, font_color)
 
             font_size = font.size(str)
-            content_center = self.string_center(
+            content_center = UI.string_center(
                 (WINDOW_WIDTH / 2, CAPTURE_IMAGE_HEIGHT + self.MARGIN_BOTTOM + self.HEIGHT / 2), font_size)
             self.content_rect = Rect(content_center[0], content_center[1], font_size[0], font_size[1])
 

@@ -1,7 +1,7 @@
 import subprocess
 import time
 from Constraints import *
-from Library import get_logger, log_dir, ymd
+from Library import log_dir, ymd, video_path
 import psutil
 
 
@@ -52,31 +52,42 @@ class Backend:
                                                             OUTSIDE_CAMERA_SHOWER_DEVICE)
 
     @staticmethod
-    def launch_process_inside_camera_streaming_bifurcation():
-        command = Backend.create_inside_camera_streaming_bifurcation_command()
-        return Backend.launch_process(command)
+    def create_inside_recording_command():
+        mp4 = video_path('inside_camera')
+        command = \
+            f"gst-launch-1.0 -e v4l2src device={INSIDE_CAMERA_RECORDING_DEVICE} ! " \
+            f"queue ! " \
+            f"videoconvert ! " \
+            f"v4l2h264enc ! " \
+            f"'video/x-h264,level=(string)4' ! " \
+            f"h264parse ! " \
+            f"mux. alsasrc device='hw:audio-inside,0' ! " \
+            f"queue ! " \
+            f"audioconvert ! " \
+            f"voaacenc ! " \
+            f"mp4mux name=mux ! " \
+            f"filesink location={mp4} sync=false"
+        return command
 
     @staticmethod
-    def launch_process_outside_camera_streaming_bifurcation():
-        command = Backend.create_outside_camera_streaming_bifurcation_command()
-        return Backend.launch_process(command)
+    def create_outside_recording_command():
+        mp4 = video_path('outside_camera')
+        command = \
+            f"gst-launch-1.0 -e v4l2src device={OUTSIDE_CAMERA_RECORDING_DEVICE} ! " \
+            f"videoconvert ! " \
+            f"v4l2h264enc ! " \
+            f"'video/x-h264,level=(string)4' ! " \
+            f"h264parse ! " \
+            f"mp4mux name=mux ! " \
+            f"filesink location={mp4} sync=false"
+        return command
 
     @staticmethod
     def launch_process(command):
-        if Backend.is_arrive_process(command):  # 既にプロセス起動済み
-            return True
-        else:
-            retry_num = 10
-            for _ in range(retry_num):
-                subprocess.Popen(Backend.nohup_wrap_command(command), shell=True)
-                time.sleep(3)
-                if Backend.is_arrive_process(command):
-                    return True
-            get_logger().error(f"プロセス起動に失敗しました。{command} : retry={retry_num}")
-            return False
+        subprocess.Popen(Backend.nohup_wrap_command(command), shell=True)
+        time.sleep(1)
 
     @staticmethod
     def nohup_wrap_command(command):
         stderr_path = f'{log_dir()}nohup_error_{ymd()}.log'
         return f"nohup {command} 2>>{stderr_path} 1>/dev/null &"
-

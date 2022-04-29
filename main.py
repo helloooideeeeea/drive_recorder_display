@@ -4,6 +4,7 @@ from pygame.locals import *
 from Constraints import *
 from Scene.CameraScene import CameraScene
 from Scene.SettingScene import SettingScene
+from Scene.StartupScene import StartupScene
 
 
 class WindowLoop:
@@ -16,7 +17,7 @@ class WindowLoop:
         pygame.display.set_caption("Drive Recorder")  # ウィンドウタイトル
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.FULLSCREEN)  # ウィンドウサイズ
 
-        self.current_scene = CameraScene(window=self)
+        self.current_scene = StartupScene(window=self)
 
     def loop(self):
 
@@ -41,7 +42,9 @@ class WindowLoop:
                     sys.exit()
 
     def switch_scene(self, name):
-        if name == SETTING_SCENE_NAME:
+        if name == CAMERA_SCENE_NAME:
+            self.current_scene = CameraScene(window=self)
+        elif name == SETTING_SCENE_NAME:
             self.current_scene = SettingScene(window=self)
 
 
