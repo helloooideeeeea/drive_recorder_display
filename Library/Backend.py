@@ -8,7 +8,8 @@ class Backend:
 
     @staticmethod
     def is_arrive_process(command):
-        return subprocess.run(["ps", "-C", "--no-header", command]).returncode == 0
+        print(f'command: {command}')
+        return subprocess.run(["ps", "--no-header", "-C", command]).returncode == 0
 
     @staticmethod
     def create_streaming_bifurcation_command(camera_hard_device,
