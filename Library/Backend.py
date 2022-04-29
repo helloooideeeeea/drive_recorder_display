@@ -2,14 +2,23 @@ import subprocess
 import time
 from Constraints import *
 from Library import get_logger, log_dir, ymd
+import psutil
 
 
 class Backend:
 
     @staticmethod
+    def kill_process(command):
+        pass
+
+    @staticmethod
     def is_arrive_process(command):
         print(f'command: {command}')
-        return subprocess.run(["ps", "--no-header", "-C", command]).returncode == 0
+        for proc in psutil.process_iter():
+            if proc.name() == command:
+                print(f'proc: {proc.name()}')
+                return True
+        return False
 
     @staticmethod
     def create_streaming_bifurcation_command(camera_hard_device,
@@ -46,13 +55,11 @@ class Backend:
     @staticmethod
     def launch_process_inside_camera_streaming_bifurcation():
         command = Backend.create_inside_camera_streaming_bifurcation_command()
-        command = Backend.nohup_wrap_command(command)
         return Backend.launch_process(command)
 
     @staticmethod
     def launch_process_outside_camera_streaming_bifurcation():
         command = Backend.create_outside_camera_streaming_bifurcation_command()
-        command = Backend.nohup_wrap_command(command)
         return Backend.launch_process(command)
 
     @staticmethod
@@ -62,7 +69,7 @@ class Backend:
         else:
             retry_num = 10
             for _ in range(retry_num):
-                subprocess.Popen(command, shell=True)
+                subprocess.Popen(Backend.nohup_wrap_command(command), shell=True)
                 time.sleep(3)
                 if Backend.is_arrive_process(command):
                     return True
