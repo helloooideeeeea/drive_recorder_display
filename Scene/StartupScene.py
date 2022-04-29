@@ -5,6 +5,7 @@ from Constraints import *
 from Library.Backend import Backend
 from Library.UI import UI
 from enum import IntEnum, auto
+import time
 
 
 class StartupScene(Scene):
@@ -56,7 +57,7 @@ class StartupScene(Scene):
             else:
                 if self.backend.failed_counter < self.FAILED_COUNT_NUM:
                     self.label.set_text(f'Failed inside camera streaming bifurcation...retry:{self.backend.failed_counter}')
-                    Backend.launch_process(self.command2)
+                    Backend.launch_process(self.command1)
                 else:
                     self.label.set_text('Failed inside camera streaming bifurcation...please restart')
 
@@ -69,7 +70,7 @@ class StartupScene(Scene):
             else:
                 if self.backend.failed_counter < self.FAILED_COUNT_NUM:
                     self.label.set_text(f'Failed outside camera streaming bifurcation...retry:{self.backend.failed_counter}')
-                    Backend.launch_process(self.command3)
+                    Backend.launch_process(self.command2)
                 else:
                     self.label.set_text('Failed outside camera streaming bifurcation...please restart')
 
@@ -82,7 +83,7 @@ class StartupScene(Scene):
             else:
                 if self.backend.failed_counter < self.FAILED_COUNT_NUM:
                     self.label.set_text(f'Failed inside camera recording...retry:{self.backend.failed_counter}')
-                    Backend.launch_process(self.command4)
+                    Backend.launch_process(self.command3)
                 else:
                     self.label.set_text('Failed inside camera recording...please restart')
 
@@ -102,6 +103,8 @@ class StartupScene(Scene):
 
         for sprite in self.sprite_group:
             sprite.draw(self.screen)
+
+        time.sleep(3)
 
 
     def click_notify(self, position):

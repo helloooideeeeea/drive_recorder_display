@@ -95,7 +95,6 @@ class Backend:
     @staticmethod
     def launch_process(command):
         subprocess.Popen(Backend.nohup_wrap_command(command), shell=True)
-        time.sleep(2)
 
     @staticmethod
     def nohup_wrap_command(command):
