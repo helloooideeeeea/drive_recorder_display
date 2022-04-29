@@ -3,6 +3,9 @@ from Scene import Scene
 from pygame.locals import *
 from Constraints import *
 import cv2
+import os
+from dotenv import load_dotenv
+load_dotenv() #.env読込
 
 
 class CameraScene(Scene):
@@ -40,8 +43,8 @@ class CameraScene(Scene):
         btn = self.FinishButton(self)
         self.sprite_group.add(btn)
 
-        self.frame0 = cv2.VideoCapture(CAMERA_ID_1)
-        self.frame1 = cv2.VideoCapture(CAMERA_ID_2)
+        self.frame0 = cv2.VideoCapture(os.getenv('INSIDE_CAMERA'))
+        self.frame1 = cv2.VideoCapture(os.getenv('OUTSIDE_CAMERA'))
 
         self.camera_setting(frame=self.frame0)
         self.camera_setting(frame=self.frame1)
