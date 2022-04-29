@@ -13,10 +13,9 @@ class Backend:
 
     @staticmethod
     def is_arrive_process(command):
-        print(f'command: {command}')
         for proc in psutil.process_iter():
-            if proc.name() == command:
-                print(f'proc: {proc.name()}')
+            cmd = ' '.join(proc.cmdline())
+            if cmd == command:
                 return True
         return False
 
