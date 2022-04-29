@@ -23,11 +23,10 @@ class Backend:
 
     @staticmethod
     def is_arrive_process(command):
-        get_logger().info(f"proc command: {command}")
+        s_command = command[0:49]
         for proc in psutil.process_iter():
-            cmd = ' '.join(proc.cmdline())
-            get_logger().info(f"proc list: {cmd}")
-            if cmd == command:
+            cmd = ' '.join(proc.cmdline())[0:49]
+            if cmd == s_command:
                 return True
         return False
 
