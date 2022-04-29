@@ -50,5 +50,9 @@ gst-launch-1.0 -e v4l2src device="/dev/video66" ! queue ! videoconvert ! x264enc
 完成系（動画音声ミックス。ハードウェアエンコード。）
 gst-launch-1.0 -e v4l2src device="/dev/video66" ! queue ! videoconvert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! mux. alsasrc device="hw:audio-inside,0" ! queue ! audioconvert ! voaacenc ! mp4mux name=mux ! filesink location=inside_camera.mp4 sync=false
 
-動画のみ（ハードウェアエンコード。）
-gst-launch-1.0 -e v4l2src device="/dev/video88" ! videoconvert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! mp4mux name=mux ! filesink location=test5.mp4 sync=false
+動画のみ（ハードウェアエンコード。）gst-launch-1.0 -e v4l2src device="/dev/video88" ! videoconvert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! mp4mux name=mux ! filesink location=test5.mp4 sync=false
+
+HLSの検討
+gst-launch-1.0 -e v4l2src device="/dev/video88" ! videoconvert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! mpegtsmux name=mux ! hlssink max-files=0 target-duration=180 location=./hls/segment%05d.ts playlist-location=./hls/playlist.m3u8 sync=false
+
+

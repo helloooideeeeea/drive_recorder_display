@@ -1,6 +1,6 @@
 import subprocess
 from Constraints import *
-from Library import log_dir, ymd, video_path
+from Library import log_dir, ymd, create_video_path
 import psutil
 
 
@@ -63,37 +63,36 @@ class Backend:
 
     @staticmethod
     def create_inside_recording_command():
-        mp4 = video_path('inside_camera')
-        command = \
-            f"gst-launch-1.0 -e v4l2src device={INSIDE_CAMERA_RECORDING_DEVICE} ! " \
-            f"queue ! " \
-            f"videoconvert ! " \
-            f"v4l2h264enc ! " \
-            f"'video/x-h264,level=(string)4' ! " \
-            f"h264parse ! " \
-            f"mux. alsasrc device='hw:audio-inside,0' ! " \
-            f"queue ! " \
-            f"audioconvert ! " \
-            f"voaacenc ! " \
-            f"mp4mux name=mux ! " \
-            f"filesink location={mp4} sync=false"
-        return command
-
-    @staticmethod
-    def create_outside_recording_command():
-        mp4 = video_path('outside_camera')
+        path = create_video_path('inside')
         command = \
             f"gst-launch-1.0 -e v4l2src device={OUTSIDE_CAMERA_RECORDING_DEVICE} ! " \
             f"videoconvert ! " \
             f"v4l2h264enc ! " \
             f"'video/x-h264,level=(string)4' ! " \
             f"h264parse ! " \
-            f"mp4mux name=mux ! " \
-            f"filesink location={mp4} sync=false"
+            f"mpegtsmux name=mux ! " \
+            f"hlssink max-files=0 target-duration=180 location={path}segment%05d.ts playlist-location={path}playlist.m3u8 sync=false"
+        return command
+
+    @staticmethod
+    def create_outside_recording_command():
+        path = create_video_path('outside')
+        command = \
+            f"gst-launch-1.0 -e v4l2src device={OUTSIDE_CAMERA_RECORDING_DEVICE} ! " \
+            f"videoconvert ! " \
+            f"v4l2h264enc ! " \
+            f"'video/x-h264,level=(string)4' ! " \
+            f"h264parse ! " \
+            f"mpegtsmux name=mux ! " \
+            f"hlssink max-files=0 target-duration=180 location={path}segment%05d.ts playlist-location={path}playlist.m3u8 sync=false"
         return command
 
     @staticmethod
     def launch_process(command):
+        subprocess.Popen(command, shell=True)
+
+    @staticmethod
+    def launch_process_with_nohup(command):
         subprocess.Popen(Backend.nohup_wrap_command(command), shell=True)
 
     @staticmethod

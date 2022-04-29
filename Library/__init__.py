@@ -28,6 +28,11 @@ def video_path(prefix):
     return data_dir() + prefix + '_' + ymdhm() + '.mp4'
 
 
+def create_video_path(prefix):
+    path = data_dir() + prefix + '/' + ymdhm()
+    os.mkdir(path)
+    return path + '/'
+
 def make_random_str(n=8):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=n))
 
