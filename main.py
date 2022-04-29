@@ -8,6 +8,7 @@ from Scene.StartupScene import StartupScene
 from loguru import logger
 from Library import log_dir,ymd
 
+
 class WindowLoop:
 
     running = True
@@ -16,9 +17,9 @@ class WindowLoop:
     def __init__(self):
         pygame.init()  # 初期化
         pygame.display.set_caption("Drive Recorder")  # ウィンドウタイトル
-        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.FULLSCREEN)  # ウィンドウサイズ
+        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))  # ウィンドウサイズ
 
-        self.current_scene = StartupScene(window=self)
+        self.current_scene = CameraScene(window=self)
 
     def loop(self):
 

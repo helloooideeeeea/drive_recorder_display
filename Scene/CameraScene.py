@@ -2,38 +2,19 @@ import pygame
 from Scene import Scene
 from pygame.locals import *
 from Constraints import *
+from Library.CameraSettings import CameraSettings
 import cv2
 import os
 from Library.UI import UI
 from dotenv import load_dotenv
-load_dotenv() #.env読込
+
+load_dotenv()  # .env読込
 
 
 class CameraScene(Scene):
     window = None
     screen = None
     sprite_group = None
-
-    @staticmethod
-    def decode_fourcc(v):
-        v = int(v)
-        return "".join([chr((v >> 8 * i) & 0xFF) for i in range(4)])
-
-    @staticmethod
-    def camera_setting(frame):
-
-        # フォーマット・解像度・FPSの設定
-        frame.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
-        frame.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        frame.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-        frame.set(cv2.CAP_PROP_FPS, 30)
-
-        # フォーマット・解像度・FPSの取得
-        fourcc = CameraScene.decode_fourcc(frame.get(cv2.CAP_PROP_FOURCC))
-        width = frame.get(cv2.CAP_PROP_FRAME_WIDTH)
-        height = frame.get(cv2.CAP_PROP_FRAME_HEIGHT)
-        fps = frame.get(cv2.CAP_PROP_FPS)
-        print("fourcc:{} fps:{}　width:{}　height:{}".format(fourcc, fps, width, height))
 
     def __init__(self, window):
 
@@ -47,8 +28,8 @@ class CameraScene(Scene):
         self.frame0 = cv2.VideoCapture(os.getenv('INSIDE_CAMERA'))
         self.frame1 = cv2.VideoCapture(os.getenv('OUTSIDE_CAMERA'))
 
-        self.camera_setting(frame=self.frame0)
-        self.camera_setting(frame=self.frame1)
+        CameraSettings.set(frame=self.frame0)
+        CameraSettings.set(frame=self.frame1)
 
     # Windowクラスが実行するループ
     def loop(self):
@@ -63,8 +44,8 @@ class CameraScene(Scene):
         img1 = cv2.resize(img1, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
 
         #
-        pygame_image1 = self.convert_opencv_img_to_pygame(opencv_image=img0)
-        pygame_image2 = self.convert_opencv_img_to_pygame(opencv_image=img1)
+        pygame_image1 = CameraSettings.convert_opencv_img_to_pygame(opencv_image=img0)
+        pygame_image2 = CameraSettings.convert_opencv_img_to_pygame(opencv_image=img1)
 
         self.screen.blit(pygame_image1, (0, 0))
         self.screen.blit(pygame_image2, (CAPTURE_IMAGE_WIDTH, 0))
@@ -92,13 +73,6 @@ class CameraScene(Scene):
         self.frame0.release()
         self.frame1.release()
         cv2.destroyAllWindows()
-
-    @staticmethod
-    def convert_opencv_img_to_pygame(opencv_image):
-        opencv_image = opencv_image[:, :, ::-1]  # OpenCVはBGR、pygameはRGBなので変換してやる必要がある。
-        shape = opencv_image.shape[1::-1]  # OpenCVは(高さ, 幅, 色数)、pygameは(幅, 高さ)なのでこれも変換。
-        pygame_image = pygame.image.frombuffer(opencv_image.tobytes(), shape, 'RGB')
-        return pygame_image
 
     # Finishボタンの実装
     class FinishButton(pygame.sprite.Sprite):

@@ -134,7 +134,7 @@ class StartupScene(Scene):
             font_color = (0, 0, 0)
             self.content = font.render(text, True, font_color)
             font_size = font.size(text)
-            content_center = UI.string_center((WINDOW_WIDTH/2 - self.WIDTH/2, WINDOW_HEIGHT/2 - self.HEIGHT), font_size)
+            content_center = UI.string_center((WINDOW_WIDTH/2, WINDOW_HEIGHT/2), font_size)
             self.rect = Rect(content_center[0], content_center[1], font_size[0], font_size[1])
 
         def draw(self, screen):

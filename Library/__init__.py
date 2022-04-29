@@ -27,6 +27,7 @@ def ymdhm():
 def video_path(prefix):
     return data_dir() + prefix + '_' + ymdhm() + '.mp4'
 
+
 def make_random_str(n=8):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=n))
 
