@@ -4,4 +4,7 @@ include
 bin
 pyvenv.cfg
 __pycache__
+.env
+log
+data
 

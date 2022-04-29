@@ -5,7 +5,6 @@ from Constraints import *
 from Library.Backend import Backend
 from Library.UI import UI
 from enum import IntEnum, auto
-import time
 
 
 class StartupScene(Scene):
@@ -127,21 +126,18 @@ class StartupScene(Scene):
 
         def __init__(self, scene, *groups):
             super().__init__(*groups)
-
             self.scene = scene
-            self.background = pygame.Surface((self.WIDTH, self.HEIGHT))
-            self.rect = Rect(WINDOW_WIDTH/2 - self.WIDTH/2, WINDOW_HEIGHT/2 - self.HEIGHT, self.WIDTH, self.HEIGHT)
+
 
         def set_text(self, text):
             font = pygame.font.SysFont(None, 16)
             font_color = (0, 0, 0)
             self.content = font.render(text, True, font_color)
             font_size = font.size(text)
-            content_center = UI.string_center((self.WIDTH/2, self.HEIGHT/2), font_size)
-            self.content_rect = Rect(content_center[0], content_center[1], font_size[0], font_size[1])
+            content_center = UI.string_center((WINDOW_WIDTH/2 - self.WIDTH/2, WINDOW_HEIGHT/2 - self.HEIGHT), font_size)
+            self.rect = Rect(content_center[0], content_center[1], font_size[0], font_size[1])
 
         def draw(self, screen):
-            screen.blit(self.background, self.rect)
-            screen.blit(self.content, self.content_rect)
+            screen.blit(self.content, self.rect)
 
 

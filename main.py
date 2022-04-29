@@ -5,7 +5,8 @@ from Constraints import *
 from Scene.CameraScene import CameraScene
 from Scene.SettingScene import SettingScene
 from Scene.StartupScene import StartupScene
-
+from loguru import logger
+from Library import log_dir,ymd
 
 class WindowLoop:
 
@@ -49,6 +50,7 @@ class WindowLoop:
 
 
 def main():
+    logger.add(f'{log_dir()}app_{ymd()}.log')
     wl = WindowLoop()
     wl.loop()
 

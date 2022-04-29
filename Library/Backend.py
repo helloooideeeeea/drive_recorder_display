@@ -1,7 +1,6 @@
 import subprocess
-import time
 from Constraints import *
-from Library import log_dir, ymd, video_path, get_logger
+from Library import log_dir, ymd, video_path
 import psutil
 
 
