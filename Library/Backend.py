@@ -1,7 +1,7 @@
 import subprocess
 import time
 from Constraints import *
-from Library import log_dir, ymd, video_path
+from Library import log_dir, ymd, video_path, get_logger
 import psutil
 
 
@@ -23,8 +23,10 @@ class Backend:
 
     @staticmethod
     def is_arrive_process(command):
+        get_logger().info(f"proc command: {command}")
         for proc in psutil.process_iter():
             cmd = ' '.join(proc.cmdline())
+            get_logger().info(f"proc list: {cmd}")
             if cmd == command:
                 return True
         return False
