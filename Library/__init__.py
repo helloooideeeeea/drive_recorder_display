@@ -1,6 +1,11 @@
 import random, string, os
 import datetime
+from dotenv import load_dotenv
+load_dotenv()  # .env読込
 
+
+def is_debug():
+    return os.getenv('ENV') == "DEBUG"
 
 def root_dir():
     return os.getcwd()

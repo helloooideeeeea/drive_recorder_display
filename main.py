@@ -6,7 +6,7 @@ from Scene.CameraScene import CameraScene
 from Scene.SettingScene import SettingScene
 from Scene.StartupScene import StartupScene
 from loguru import logger
-from Library import log_dir,ymd
+from Library import log_dir,ymd, is_debug
 
 
 class WindowLoop:
@@ -17,7 +17,10 @@ class WindowLoop:
     def __init__(self):
         pygame.init()  # 初期化
         pygame.display.set_caption("Drive Recorder")  # ウィンドウタイトル
-        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))  # ウィンドウサイズ
+        if is_debug():
+            self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))  # ウィンドウサイズ
+        else:
+            self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.FULLSCREEN)
 
         self.current_scene = StartupScene(window=self)
 
