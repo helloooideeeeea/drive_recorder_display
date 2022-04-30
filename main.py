@@ -17,11 +17,7 @@ class WindowLoop:
     def __init__(self):
         pygame.init()  # 初期化
         pygame.display.set_caption("Drive Recorder")  # ウィンドウタイトル
-        if is_debug():
-            self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))  # ウィンドウサイズ
-        else:
-            self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.FULLSCREEN)
-
+        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))  # ウィンドウサイズ　pygame.FULLSCREEN
         self.current_scene = StartupScene(window=self)
 
     def loop(self):

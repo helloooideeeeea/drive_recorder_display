@@ -1,4 +1,4 @@
-# /etc/udev/rules.d/11-local.rules
+# /etc/udev/rules.d/99-local-audio.rules
 
 # For alsa card naming (check with `cat /proc/asound/cards`)
 #
@@ -8,7 +8,7 @@ ACTION!="add", GOTO="alsa_naming_end"
 # DEVPATH can be obtained by looking at `udevadm monitor --subsystem=sound` and while pluging in the sound card.
 # Do one card at a time, the "?" char on card should stay as it matches any card number that may pop on that USB port.
 DEVPATH=="/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.1/1-1.1:1.2/sound/card?", ATTR{id}="audio-inside"
-DEVPATH=="/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.3/1-1.3:1.2/sound/card?", ATTR{id}="audio-outside"
+DEVPATH=="/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.4/1-1.4:1.2/sound/card?", ATTR{id}="audio-outside"
 
 LABEL="alsa_naming_end"
 
@@ -22,6 +22,6 @@ KERNEL!="card*", GOTO="pa_naming_end"
 
 # Same as before, edit this block at will.
 DEVPATH=="/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.1/1-1.1:1.2/sound/card?", ATTR{id}="audio-inside"
-DEVPATH=="/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.3/1-1.3:1.2/sound/card?", ATTR{id}="audio-outside"
+DEVPATH=="/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.4/1-1.4:1.2/sound/card?", ATTR{id}="audio-outside"
 
 LABEL="pa_naming_end"

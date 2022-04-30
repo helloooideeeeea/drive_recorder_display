@@ -20,20 +20,22 @@ Wants=default.target
 
 [Service]
 Environment=USER_NAME=yasushi-sakita
-User=${USER_NAME}
-Group=${USER_NAME}
+User=yasushi-sakita
+Group=yasushi-sakita
 Environment=DISPLAY=:0.0
-Environment=XAUTORITY=/home/${USER_NAME}/.Xauthority
-ExecStart=/usr/bin/python3 /home/${USER_NAME}/dev/python/drive_recorder_display/main.py
+Environment=XAUTORITY=/home/yasushi-sakita/.Xauthority
+WorkingDirectory=/home/yasushi-sakita/dev/python/drive_recorder_display
+ExecStart=/usr/bin/python3 main.py
 Type=idle
 
 [Install]
 WantedBy=default.target
 EOT
 
-
 sudo /usr/bin/systemctl daemon-reload
 sudo /usr/bin/systemctl enable my_app.service
+起動ログ確認
+sudo journalctl -u my_app.service
 
 仮想デバイスを自動で４つ作るようにする
 echo "options v4l2loopback video_nr=66,77,88,99" | sudo tee -a /etc/modprobe.d/v4l2loopback.conf
