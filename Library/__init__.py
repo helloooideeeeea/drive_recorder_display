@@ -7,6 +7,7 @@ load_dotenv()  # .env読込
 def is_debug():
     return os.getenv('ENV') == "DEBUG"
 
+
 def root_dir():
     return os.getcwd()
 
@@ -18,6 +19,9 @@ def log_dir():
 def data_dir():
     return root_dir() + '/data/'
 
+
+def assets_dir():
+    return root_dir() + '/assets/'
 
 def ymd():
     now = datetime.datetime.now()

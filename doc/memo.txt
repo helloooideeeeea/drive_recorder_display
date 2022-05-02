@@ -40,3 +40,14 @@ sudo journalctl -u my_app.service
 仮想デバイスを自動で４つ作るようにする
 echo "options v4l2loopback video_nr=66,77,88,99" | sudo tee -a /etc/modprobe.d/v4l2loopback.conf
 echo v4l2loopback | sudo tee -a /etc/modules-load.d/modules.conf
+
+
+SDバックアップ
+diskutil list
+diskutil umountDisk /dev/disk4
+sudo dd if=/dev/disk4 of=raspi-backup.img bs=1m
+
+SD書き込み
+diskutil list
+diskutil umountDisk /dev/disk4
+sudo dd if=./raspi-backup.img of=/dev/disk4 bs=1m
