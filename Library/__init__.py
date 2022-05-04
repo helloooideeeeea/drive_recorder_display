@@ -20,6 +20,14 @@ def data_dir():
     return root_dir() + '/data/'
 
 
+def inside_video_data_dir():
+    return data_dir() + 'inside/'
+
+
+def outside_video_data_dir():
+    return data_dir() + 'outside/'
+
+
 def assets_dir():
     return root_dir() + '/assets/'
 

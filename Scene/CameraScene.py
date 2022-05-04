@@ -6,8 +6,8 @@ from Library.CameraSettings import CameraSettings
 import cv2
 import os
 from Library.UI import UI
+from Library.SpriteSheet import SpriteSheet
 from dotenv import load_dotenv
-
 load_dotenv()  # .env読込
 
 
@@ -66,7 +66,7 @@ class CameraScene(Scene):
 
     # Finishボタンがクリックされたら、シーンの切り替え命令を出す
     def finish_button_clicked(self):
-        self.window.switch_scene(SETTING_SCENE_NAME)
+        self.window.switch_scene(FILE_SELECT_SCENE_NAME)
         self.defer()
 
     def defer(self):
@@ -101,7 +101,7 @@ class CameraScene(Scene):
 
             font = pygame.font.SysFont(None, 16)
             font_color = (0, 0, 0)
-            str = "Finish"
+            str = "History"
             self.content = font.render(str, True, font_color)
 
             font_size = font.size(str)

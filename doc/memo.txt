@@ -44,8 +44,8 @@ echo v4l2loopback | sudo tee -a /etc/modules-load.d/modules.conf
 
 SDバックアップ
 diskutil list
-diskutil umountDisk /dev/disk4
-sudo dd if=/dev/disk4 of=raspi-backup.img bs=1m
+diskutil umountDisk /dev/disk2
+sudo dd if=/dev/disk2 of=raspi-backup.img bs=1m
 
 SD書き込み
 diskutil list

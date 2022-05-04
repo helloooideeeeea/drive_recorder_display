@@ -17,7 +17,7 @@ class MovieScene(Scene):
         self.window = window
         self.screen = window.screen
         self.isPlaying = False
-        self.vid = Video(data_dir()+'inside/test/playlist.m3u8')
+        self.vid = Video(data_dir()+'inside/202204291829/playlist.m3u8')
         self.vid.set_size((WINDOW_WIDTH, WINDOW_HEIGHT))
         print(self.vid.get_file_data())
 
@@ -29,8 +29,8 @@ class MovieScene(Scene):
 
         if self.isPlaying:
             self.vid.draw(self.screen, (0, 0), force_draw=False)
-
-        self.screen.blit(self.play_image, self.play_image_rect)
+        else:
+            self.screen.blit(self.play_image, self.play_image_rect)
 
 
     def click_notify(self, position):

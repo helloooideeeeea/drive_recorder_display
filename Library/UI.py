@@ -1,9 +1,16 @@
 from Library.SpriteSheet import SpriteSheet
 from Library import assets_dir
+import pygame
 from pygame.locals import Rect
 
 
 class UI:
+
+    @staticmethod
+    def font_surface(text, font_size):
+        font = pygame.font.SysFont(None, font_size)
+        font_color = (0, 0, 0)
+        return font.render(text, True, font_color), font.size(text)
 
     @staticmethod
     def string_center(center_position, font_size):
@@ -20,11 +27,17 @@ class UI:
     @staticmethod
     def slice_icon_video_player():
         ss = SpriteSheet(assets_dir()+'video_player.png')
+        play_image = UI._play_icon(ss)
+        return play_image
+
+    @staticmethod
+    def _play_icon(sprite_sheet):
         cut_x = 235
         cut_y = 357
         width = 65
         height = 72
-
-        play_image = ss.image_at((cut_x, cut_y, width, height))
+        return sprite_sheet.image_at((cut_x, cut_y, width, height))
         # play_image = pygame.transform.scale(play_image, (40, 40))
-        return play_image
+
+    # @staticmethod
+    # def _play_icon(sprite_sheet):

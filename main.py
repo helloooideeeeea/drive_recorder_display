@@ -3,8 +3,9 @@ import pygame
 from pygame.locals import *
 from Constraints import *
 from Scene.CameraScene import CameraScene
-from Scene.SettingScene import SettingScene
 from Scene.StartupScene import StartupScene
+from Scene.MovieScene import MovieScene
+from Scene.FileSelectScene import FileSelectScene
 from loguru import logger
 from Library import log_dir,ymd, is_debug
 
@@ -18,7 +19,7 @@ class WindowLoop:
         pygame.init()  # 初期化
         pygame.display.set_caption("Drive Recorder")  # ウィンドウタイトル
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))  # ウィンドウサイズ　pygame.FULLSCREEN
-        self.current_scene = StartupScene(window=self)
+        self.current_scene = FileSelectScene(window=self)
 
     def loop(self):
 
@@ -42,11 +43,13 @@ class WindowLoop:
                     pygame.quit()
                     sys.exit()
 
-    def switch_scene(self, name):
+    def switch_scene(self, name, data = None):
         if name == CAMERA_SCENE_NAME:
             self.current_scene = CameraScene(window=self)
-        elif name == SETTING_SCENE_NAME:
-            self.current_scene = SettingScene(window=self)
+        elif name == FILE_SELECT_SCENE_NAME:
+            self.current_scene = FileSelectScene(window=self, page=data["page"])
+        elif name == MOVIE_SCENE_NAME:
+            self.current_scene = MovieScene(window=self, path=data["path"])
 
 
 def main():
