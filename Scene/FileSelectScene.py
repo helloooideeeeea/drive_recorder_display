@@ -1,5 +1,4 @@
 from Scene import Scene
-import pygame
 from pygame.locals import *
 from Library import make_random_str, inside_video_data_dir, outside_video_data_dir
 from Library import UI
@@ -23,27 +22,42 @@ class FileSelectScene(Scene):
         self.window = window
         self.screen = window.screen
 
-        self.items = self.dummy_items()
-        # self.items = self.dir_salvage()
+        self.items = self.dir_salvage()
         self.pager_switch()
         self.back_surface, self.back_rect = self.create_back()
-
 
     def pager_switch(self):
         self.pager_info_surface, self.pager_info_rect, self.next_surface, self.next_rect, self.prev_surface, self.prev_rect = self.create_pager()
 
     def dir_salvage(self):
+        items = []
+        files = []
         inside_files = glob.glob(inside_video_data_dir() + "*")
         outside_files = glob.glob(outside_video_data_dir() + "*")
+        files.extend(inside_files)
+        files.extend(outside_files)
 
-        print(f"inside_file:{inside_files} outside_file:{outside_files}")
+        arr = []
+        for dir in files:
+            video_date = dir.split('/')[-1]
+            which = dir.split('/')[-2]
+            arr.append({'video_date': video_date, 'which': which})
 
-    def dummy_items(self):
-        items = []
-        for i in range(15):
-            surface, rect = self.create_item(i, make_random_str(10))
-            items.append({"surface":surface,"rect":rect})
+        sorted_arr = sorted(arr, key=lambda x: x['video_date'], reverse=True)
+
+        for index, dir in enumerate(sorted_arr):
+            path = '/'.join([dir['which'], dir['video_date']])
+            surface, rect = self.create_item(index, path)
+            items.append({"surface": surface, "rect": rect, "path": path})
+
         return items
+
+    # def dummy_items(self):
+    #     items = []
+    #     for i in range(15):
+    #         surface, rect = self.create_item(i, make_random_str(10))
+    #         items.append({"surface":surface,"rect":rect})
+    #     return items
 
     def create_item(self, index, text):
         surface, font_size = UI.UI.font_surface(text, 50)
@@ -106,12 +120,12 @@ class FileSelectScene(Scene):
             self.screen.blit(self.pager_info_surface, self.pager_info_rect)
 
     def click_notify(self, position):
-        if self.back_rect is not None:
+        if self.back_rect.collidepoint(position):
             self.window.switch_scene(CAMERA_SCENE_NAME)
             return
         for index, item_view in enumerate(self.items):
             if item_view["rect"].collidepoint(position):
-                self.window.switch_scene(MOVIE_SCENE_NAME, data=['page'])
+                self.window.switch_scene(MOVIE_SCENE_NAME, data={'path': self.pager_items()[index]['path']})
                 return
         if self.prev_rect is not None and self.prev_rect.collidepoint(position):
             self.page = self.page - 1

@@ -13,11 +13,12 @@ class MovieScene(Scene):
     window = None
     screen = None
 
-    def __init__(self, window):
+    def __init__(self, window, path):
+        self.path = path
         self.window = window
         self.screen = window.screen
         self.isPlaying = False
-        self.vid = Video(data_dir()+'inside/202204291829/playlist.m3u8')
+        self.vid = Video(data_dir()+path+'/playlist.m3u8')
         self.vid.set_size((WINDOW_WIDTH, WINDOW_HEIGHT))
         print(self.vid.get_file_data())
 
