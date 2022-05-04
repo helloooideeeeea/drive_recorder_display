@@ -24,7 +24,7 @@ class FileSelectScene(Scene):
 
         self.items = self.dir_salvage()
         self.pager_switch()
-        self.back_surface, self.back_rect = self.create_back()
+        self.back_surface, self.back_rect = UI.UI.create_back()
 
     def pager_switch(self):
         self.pager_info_surface, self.pager_info_rect, self.next_surface, self.next_rect, self.prev_surface, self.prev_rect = self.create_pager()
@@ -100,12 +100,7 @@ class FileSelectScene(Scene):
 
         return pager_info_surface, pager_info_rect, next_surface, next_rect, prev_surface, prev_rect
 
-    def create_back(self):
-        back_surface, font_size = UI.UI.font_surface(">> Back", 50)
-        font_width = font_size[0]
-        back_rect = Rect(10, 10, font_width + 20, self.ITEM_HEIGHT)
 
-        return back_surface, back_rect
 
     def loop(self):
         self.screen.fill((255, 255, 255))  # 背景色

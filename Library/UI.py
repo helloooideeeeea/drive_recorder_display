@@ -7,6 +7,13 @@ from pygame.locals import Rect
 class UI:
 
     @staticmethod
+    def create_back():
+        back_surface, font_size = UI.font_surface(">> Back", 50)
+        font_width = font_size[0]
+        back_rect = Rect(10, 10, font_width + 20, 50)
+        return back_surface, back_rect
+
+    @staticmethod
     def font_surface(text, font_size):
         font = pygame.font.SysFont(None, font_size)
         font_color = (0, 0, 0)

@@ -47,7 +47,7 @@ class WindowLoop:
         if name == CAMERA_SCENE_NAME:
             self.current_scene = CameraScene(window=self)
         elif name == FILE_SELECT_SCENE_NAME:
-            self.current_scene = FileSelectScene(window=self, page=data["page"])
+            self.current_scene = FileSelectScene(window=self)
         elif name == MOVIE_SCENE_NAME:
             self.current_scene = MovieScene(window=self, path=data["path"])
 
