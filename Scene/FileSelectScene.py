@@ -1,7 +1,7 @@
 from Scene import Scene
 from pygame.locals import *
 from Library import make_random_str, inside_video_data_dir, outside_video_data_dir
-from Library import UI
+from Library.UI import UI
 from Constraints import *
 import glob
 import math
@@ -17,14 +17,17 @@ class FileSelectScene(Scene):
     screen = None
     items = []
 
-    def __init__(self, window, page=1):
-        self.page = page
+    def __init__(self, window, data = None):
+        if data is None:
+            self.page = 1
+        else:
+            self.page = data['page']
         self.window = window
         self.screen = window.screen
 
         self.items = self.dir_salvage()
         self.pager_switch()
-        self.back_surface, self.back_rect = UI.UI.create_back()
+        self.back_surface, self.back_rect = UI.create_back()
 
     def pager_switch(self):
         self.pager_info_surface, self.pager_info_rect, self.next_surface, self.next_rect, self.prev_surface, self.prev_rect = self.create_pager()
@@ -60,7 +63,7 @@ class FileSelectScene(Scene):
     #     return items
 
     def create_item(self, index, text):
-        surface, font_size = UI.UI.font_surface(text, 50)
+        surface, font_size = UI.font_surface(text, 50)
         font_width = font_size[0]
 
         return surface, Rect(WINDOW_WIDTH/2-font_width/2, self.MARGIN_MAIN_TOP + (index%self.PER_MOVIES_NUM * self.ITEM_HEIGHT), font_width + 20, self.ITEM_HEIGHT)
@@ -84,17 +87,17 @@ class FileSelectScene(Scene):
         prev_rect = None
 
         if is_exist_next:
-            next_surface, font_size = UI.UI.font_surface("Next", 50)
+            next_surface, font_size = UI.font_surface("Next", 50)
             font_width = font_size[0]
             next_rect = Rect(WINDOW_WIDTH - font_width - self.MARGIN_LEFT - 10, self.items_height(), font_width + 20,
                              self.ITEM_HEIGHT)
 
         if is_exist_prev:
-            prev_surface, font_size = UI.UI.font_surface("Prev", 50)
+            prev_surface, font_size = UI.font_surface("Prev", 50)
             font_width = font_size[0]
             prev_rect = Rect(self.MARGIN_LEFT + 10, self.items_height(), font_width + 20, self.ITEM_HEIGHT)
 
-        pager_info_surface, font_size = UI.UI.font_surface(f"{self.page} / {page_sum}", 50)
+        pager_info_surface, font_size = UI.font_surface(f"{self.page} / {page_sum}", 50)
         font_width = font_size[0]
         pager_info_rect = Rect(WINDOW_WIDTH/2 - font_width/2, self.items_height(), font_width+20, self.ITEM_HEIGHT)
 
@@ -120,7 +123,7 @@ class FileSelectScene(Scene):
             return
         for index, item_view in enumerate(self.items):
             if item_view["rect"].collidepoint(position):
-                self.window.switch_scene(MOVIE_SCENE_NAME, data={'path': self.pager_items()[index]['path']})
+                self.window.switch_scene(MOVIE_SCENE_NAME, data={'path': self.pager_items()[index]['path'], 'page': self.page})
                 return
         if self.prev_rect is not None and self.prev_rect.collidepoint(position):
             self.page = self.page - 1
