@@ -71,7 +71,7 @@ class Backend:
             f"'video/x-h264,level=(string)4' ! " \
             f"h264parse ! " \
             f"mpegtsmux name=mux ! " \
-            f"hlssink max-files=0 target-duration=180 location={path}segment%05d.ts playlist-location={path}playlist.m3u8 sync=false"
+            f"hlssink max-files=0 target-duration=60 location={path}segment%05d.ts playlist-location={path}playlist.m3u8 sync=false"
         return command
 
     @staticmethod
@@ -84,7 +84,7 @@ class Backend:
             f"'video/x-h264,level=(string)4' ! " \
             f"h264parse ! " \
             f"mpegtsmux name=mux ! " \
-            f"hlssink max-files=0 target-duration=180 location={path}segment%05d.ts playlist-location={path}playlist.m3u8 sync=false"
+            f"hlssink max-files=0 target-duration=60 location={path}segment%05d.ts playlist-location={path}playlist.m3u8 sync=false"
         return command
 
     @staticmethod
