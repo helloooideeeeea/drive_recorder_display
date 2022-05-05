@@ -2,7 +2,6 @@ import pygame
 from Scene import Scene
 from pygame.locals import *
 from Constraints import *
-from moviepy.editor import *
 from Library import data_dir
 from Library.pyvidplayer import Video
 from Library.UI import UI
