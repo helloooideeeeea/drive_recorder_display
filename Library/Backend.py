@@ -38,14 +38,10 @@ class Backend:
                                              path):
         command = \
             f"gst-launch-1.0 v4l2src device={camera_hard_device} ! " \
-            f"image/jpeg,width={camera_resolution_width},height={camera_resolution_height},framerate={camera_framerate} ! " \
-            f"jpegdec ! " \
             f"videoconvert ! " \
+            f"video/x-raw,format=I420,width=640,height=480,framerate=30/1 ! " \
             f"tee name=tp tp. ! " \
             f"queue ! " \
-            f"videoscale ! " \
-            f"videorate ! " \
-            f"video/x-raw,format=YUY2,width=640,height=480,framerate=15/1 ! " \
             f"v4l2sink device={camera_shower_device} tp. ! " \
             f"queue ! " \
             f"v4l2h264enc ! " \
