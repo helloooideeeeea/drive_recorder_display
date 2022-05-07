@@ -28,7 +28,7 @@ class ThreadedCamera(object):
                 if ret:
                     frame = cv2.resize(frame, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
                     self.frame = CameraSettings.convert_opencv_img_to_pygame(opencv_image=frame)
-            time.sleep(1/15)
+            time.sleep(1/5)
 
 
 class CameraScene(Scene):

@@ -30,19 +30,19 @@ class Backend:
         return False
 
     @staticmethod
-    def create_streaming_bifurcation_command(camera_hard_device,
+    def create_streaming_bifurcation_command(camera_resolution_width,
+                                             camera_resolution_height,
+                                             camera_framerate,
+                                             camera_hard_device,
                                              camera_shower_device,
                                              path):
         command = \
             f"gst-launch-1.0 v4l2src device={camera_hard_device} ! " \
-            f"image/jpeg,width={RECORDING_RESOLUTION_WIDTH},height={RECORDING_RESOLUTION_HEIGHT},framerate=25/1 ! " \
+            f"image/jpeg,width={camera_resolution_width},height={camera_resolution_height},framerate={camera_framerate} ! " \
             f"jpegdec ! " \
             f"videoconvert ! " \
             f"tee name=tp tp. ! " \
             f"queue ! " \
-            f"videoscale ! " \
-            f"videorate ! " \
-            f"video/x-raw,format=YUY2,width=640,height=480,framerate=30/1 ! " \
             f"v4l2sink device={camera_shower_device} tp. ! " \
             f"queue ! " \
             f"v4l2h264enc ! " \
@@ -58,14 +58,20 @@ class Backend:
     @staticmethod
     def create_inside_camera_streaming_bifurcation_command():
         path = create_video_path('inside')
-        return Backend.create_streaming_bifurcation_command(INSIDE_CAMERA_HARD_DEVICE,
+        return Backend.create_streaming_bifurcation_command(INSIDE_CAMERA_RECORDING_RESOLUTION_WIDTH,
+                                                            INSIDE_CAMERA_RECORDING_RESOLUTION_HEIGHT,
+                                                            INSIDE_CAMERA_FRAME_RATE,
+                                                            INSIDE_CAMERA_HARD_DEVICE,
                                                             INSIDE_CAMERA_SHOWER_DEVICE,
                                                             path)
 
     @staticmethod
     def create_outside_camera_streaming_bifurcation_command():
         path = create_video_path('outside')
-        return Backend.create_streaming_bifurcation_command(OUTSIDE_CAMERA_HARD_DEVICE,
+        return Backend.create_streaming_bifurcation_command(OUTSIDE_CAMERA_RECORDING_RESOLUTION_WIDTH,
+                                                            OUTSIDE_CAMERA_RECORDING_RESOLUTION_HEIGHT,
+                                                            OUTSIDE_CAMERA_FRAME_RATE,
+                                                            OUTSIDE_CAMERA_HARD_DEVICE,
                                                             OUTSIDE_CAMERA_SHOWER_DEVICE,
                                                             path)
 
