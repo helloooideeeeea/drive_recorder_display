@@ -41,7 +41,7 @@ class Backend:
             f"tee name=tp tp. ! " \
             f"queue ! " \
             f"videoscale ! " \
-            f"videorate ! " \        
+            f"videorate ! " \
             f"video/x-raw,format=YUY2,width=640,height=480,framerate=30/1 ! " \
             f"v4l2sink device={camera_shower_device} tp. ! " \
             f"queue ! " \
