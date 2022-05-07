@@ -66,7 +66,7 @@ class StartupScene(Scene):
             else:
                 if self.backend.failed_counter < self.FAILED_COUNT_NUM:
                     self.label.set_text(f'Failed outside camera recording...retry:{self.backend.failed_counter}')
-                    Backend.launch_process_with_nohup(self.command1)
+                    Backend.launch_process_with_nohup(self.command2)
                 else:
                     self.label.set_text('Failed outside camera recording...please restart')
 
