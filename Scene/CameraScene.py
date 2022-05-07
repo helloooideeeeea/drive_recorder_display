@@ -55,8 +55,10 @@ class CameraScene(Scene):
     def loop(self):
 
         self.screen.fill((255, 255, 255))  # 背景色
-        self.screen.blit(self.threaded_camera_0.frame, (0, 0))
-        self.screen.blit(self.threaded_camera_1.frame, (CAPTURE_IMAGE_WIDTH, 0))
+        if self.threaded_camera_0.frame is not None:
+            self.screen.blit(self.threaded_camera_0.frame, (0, 0))
+        if self.threaded_camera_0.frame is not None:
+            self.screen.blit(self.threaded_camera_1.frame, (CAPTURE_IMAGE_WIDTH, 0))
 
         for sprite in self.sprite_group:
             sprite.draw(self.screen)
