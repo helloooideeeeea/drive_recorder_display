@@ -66,12 +66,17 @@ class Backend:
         path = create_video_path('inside')
         command = \
             f"gst-launch-1.0 -e v4l2src device={INSIDE_CAMERA_RECORDING_DEVICE} ! " \
-            f"videoconvert ! " \
-            f"v4l2h264enc ! " \
-            f"'video/x-h264,level=(string)4' ! " \
+            f"queue ! " \
+            f"video/x-raw, width={RECORDING_RESOLUTION_WIDTH}, height={RECORDING_RESOLUTION_HEIGHT} ! " \
+            f"nvvidconv ! " \
+            f"nvv4l2h264enc ! " \
             f"h264parse ! " \
+            f"mux. alsasrc device='hw:audio-inside,0' ! " \
+            f"queue ! " \
+            f"audioconvert !" \
+            f"voaacenc ! " \
             f"mpegtsmux name=mux ! " \
-            f"hlssink max-files=0 target-duration=60 location={path}segment%05d.ts playlist-location={path}playlist.m3u8 sync=false"
+            f"hlssink max-files=0 target-duration=60 location={path}segment%05d.ts playlist-location={path}playlist.m3u8"
         return command
 
     @staticmethod
@@ -79,12 +84,12 @@ class Backend:
         path = create_video_path('outside')
         command = \
             f"gst-launch-1.0 -e v4l2src device={OUTSIDE_CAMERA_RECORDING_DEVICE} ! " \
-            f"videoconvert ! " \
-            f"v4l2h264enc ! " \
-            f"'video/x-h264,level=(string)4' ! " \
+            f"video/x-raw, width={RECORDING_RESOLUTION_WIDTH}, height={RECORDING_RESOLUTION_HEIGHT} ! " \
+            f"nvvidconv ! " \
+            f"nvv4l2h264enc ! " \
             f"h264parse ! " \
             f"mpegtsmux name=mux ! " \
-            f"hlssink max-files=0 target-duration=60 location={path}segment%05d.ts playlist-location={path}playlist.m3u8 sync=false"
+            f"hlssink max-files=0 target-duration=60 location={path}segment%05d.ts playlist-location={path}playlist.m3u8"
         return command
 
     @staticmethod

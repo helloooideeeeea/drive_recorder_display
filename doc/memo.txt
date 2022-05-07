@@ -32,8 +32,8 @@ Type=idle
 WantedBy=default.target
 EOT
 
-sudo /usr/bin/systemctl daemon-reload
-sudo /usr/bin/systemctl enable my_app.service
+sudo systemctl daemon-reload
+sudo systemctl enable my_app.service
 起動ログ確認
 sudo journalctl -u my_app.service
 
