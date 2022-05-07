@@ -28,9 +28,6 @@ class CameraScene(Scene):
         self.frame0 = cv2.VideoCapture(os.getenv('INSIDE_CAMERA'))
         self.frame1 = cv2.VideoCapture(os.getenv('OUTSIDE_CAMERA'))
 
-        CameraSettings.set(frame=self.frame0)
-        CameraSettings.set(frame=self.frame1)
-
     # Windowクラスが実行するループ
     def loop(self):
 

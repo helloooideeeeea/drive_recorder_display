@@ -13,8 +13,6 @@ class StartupScene(Scene):
         NOT_YET = auto()
         LAUNCHING_INSIDE_CAMERA_STREAMING_BIFURCATION = auto()
         LAUNCHING_OUTSIDE_CAMERA_STREAMING_BIFURCATION = auto()
-        LAUNCHING_INSIDE_CAMERA_RECORDING = auto()
-        LAUNCHING_OUTSIDE_CAMERA_RECORDING = auto()
         SUCCESS_PROCESS_LAUNCHED = auto()
 
     process_status = ProcessType.NOT_YET
@@ -32,8 +30,6 @@ class StartupScene(Scene):
 
         self.command1 = Backend.create_inside_camera_streaming_bifurcation_command()
         self.command2 = Backend.create_outside_camera_streaming_bifurcation_command()
-        self.command3 = Backend.create_inside_recording_command()
-        self.command4 = Backend.create_outside_recording_command()
 
         self.backend = Backend()
 
@@ -63,32 +59,6 @@ class StartupScene(Scene):
         elif self.process_status == self.ProcessType.LAUNCHING_OUTSIDE_CAMERA_STREAMING_BIFURCATION:
             self.label.set_text('Launching outside camera streaming bifurcation...')
             if self.backend.is_arrive_process_with_failed_count(self.command2):
-                self.label.set_text('Launched outside camera streaming bifurcation...')
-                self.process_status = self.ProcessType.LAUNCHING_INSIDE_CAMERA_RECORDING
-                Backend.launch_process_with_nohup(self.command3)
-            else:
-                if self.backend.failed_counter < self.FAILED_COUNT_NUM:
-                    self.label.set_text(f'Failed outside camera streaming bifurcation...retry:{self.backend.failed_counter}')
-                    Backend.launch_process_with_nohup(self.command2)
-                else:
-                    self.label.set_text('Failed outside camera streaming bifurcation...please restart')
-
-        elif self.process_status == self.ProcessType.LAUNCHING_INSIDE_CAMERA_RECORDING:
-            self.label.set_text('Launching inside camera recording...')
-            if self.backend.is_arrive_process_with_failed_count(self.command3):
-                self.label.set_text('Launched inside camera recording...')
-                self.process_status = self.ProcessType.LAUNCHING_OUTSIDE_CAMERA_RECORDING
-                Backend.launch_process_with_nohup(self.command4)
-            else:
-                if self.backend.failed_counter < self.FAILED_COUNT_NUM:
-                    self.label.set_text(f'Failed inside camera recording...retry:{self.backend.failed_counter}')
-                    Backend.launch_process_with_nohup(self.command3)
-                else:
-                    self.label.set_text('Failed inside camera recording...please restart')
-
-        elif self.process_status == self.ProcessType.LAUNCHING_OUTSIDE_CAMERA_RECORDING:
-            self.label.set_text('Launching outside camera recording...')
-            if self.backend.is_arrive_process_with_failed_count(self.command4):
                 self.label.set_text('Initialized Success !!')
                 self.process_status = self.ProcessType.SUCCESS_PROCESS_LAUNCHED
                 self.window.switch_scene(CAMERA_SCENE_NAME)
@@ -96,9 +66,10 @@ class StartupScene(Scene):
             else:
                 if self.backend.failed_counter < self.FAILED_COUNT_NUM:
                     self.label.set_text(f'Failed outside camera recording...retry:{self.backend.failed_counter}')
-                    Backend.launch_process_with_nohup(self.command4)
+                    Backend.launch_process_with_nohup(self.command1)
                 else:
                     self.label.set_text('Failed outside camera recording...please restart')
+
 
         for sprite in self.sprite_group:
             sprite.draw(self.screen)
