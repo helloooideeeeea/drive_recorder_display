@@ -19,11 +19,14 @@ class ThreadedCamera(object):
         self.thread = Thread(target=self.update, args=())
         self.thread.daemon = True
         self.thread.start()
+        self.isRunning = True
 
+    def stop(self):
+        self.isRunning = False
 
     def update(self):
         while True:
-            if self.capture.isOpened():
+            if self.capture.isOpened() and self.isRunning:
                 ret, frame = self.capture.read()
                 if ret:
                     frame = cv2.resize(frame, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
@@ -71,10 +74,13 @@ class CameraScene(Scene):
 
     # Finishボタンがクリックされたら、シーンの切り替え命令を出す
     def finish_button_clicked(self):
-        self.window.switch_scene(FILE_SELECT_SCENE_NAME)
         self.defer()
+        self.window.switch_scene(FILE_SELECT_SCENE_NAME)
 
     def defer(self):
+        self.threaded_camera_0.stop()
+        self.threaded_camera_1.stop()
+        time.sleep(1)
         self.threaded_camera_0.capture.release()
         self.threaded_camera_1.capture.release()
         self.threaded_camera_0 = None
