@@ -1,0 +1,7 @@
+python-dotenv
+python-opencv
+numpy
+pymediainfo
+ffpyplayer
+python-ffmpeg-video-streaming
+loguru
