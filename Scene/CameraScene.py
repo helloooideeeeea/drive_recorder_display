@@ -3,12 +3,32 @@ from Scene import Scene
 from pygame.locals import *
 from Constraints import *
 from Library.CameraSettings import CameraSettings
-import cv2
-import os
+from threading import Thread
+import cv2, time, os
 from Library.UI import UI
 from Library.SpriteSheet import SpriteSheet
 from dotenv import load_dotenv
 load_dotenv()  # .env読込
+
+
+class ThreadedCamera(object):
+    def __init__(self, src):
+        self.capture = cv2.VideoCapture(src)
+        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 2)
+
+        self.thread = Thread(target=self.update, args=())
+        self.thread.daemon = True
+        self.thread.start()
+
+
+    def update(self):
+        while True:
+            if self.capture.isOpened():
+                ret, frame = self.capture.read()
+                if ret:
+                    frame = cv2.resize(frame, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
+                    self.frame = CameraSettings.convert_opencv_img_to_pygame(opencv_image=frame)
+            time.sleep(1/15)
 
 
 class CameraScene(Scene):
@@ -25,26 +45,15 @@ class CameraScene(Scene):
         btn = self.FinishButton(self)
         self.sprite_group.add(btn)
 
-        self.frame0 = cv2.VideoCapture(os.getenv('INSIDE_CAMERA'))
-        self.frame1 = cv2.VideoCapture(os.getenv('OUTSIDE_CAMERA'))
+        self.threaded_camera_0 = ThreadedCamera(os.getenv('INSIDE_CAMERA'))
+        self.threaded_camera_1 = ThreadedCamera(os.getenv('OUTSIDE_CAMERA'))
 
     # Windowクラスが実行するループ
     def loop(self):
 
         self.screen.fill((255, 255, 255))  # 背景色
-
-        ret0, img0 = self.frame0.read()
-        ret1, img1 = self.frame1.read()
-
-        if ret0:
-            img0 = cv2.resize(img0, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
-            pygame_image1 = CameraSettings.convert_opencv_img_to_pygame(opencv_image=img0)
-            self.screen.blit(pygame_image1, (0, 0))
-
-        if ret1:
-            img1 = cv2.resize(img1, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
-            pygame_image2 = CameraSettings.convert_opencv_img_to_pygame(opencv_image=img1)
-            self.screen.blit(pygame_image2, (CAPTURE_IMAGE_WIDTH, 0))
+        self.screen.blit(self.threaded_camera_0.frame, (0, 0))
+        self.screen.blit(self.threaded_camera_1.frame, (CAPTURE_IMAGE_WIDTH, 0))
 
         for sprite in self.sprite_group:
             sprite.draw(self.screen)
@@ -66,8 +75,10 @@ class CameraScene(Scene):
         self.defer()
 
     def defer(self):
-        self.frame0.release()
-        self.frame1.release()
+        self.threaded_camera_0.capture.release()
+        self.threaded_camera_1.capture.release()
+        self.threaded_camera_0 = None
+        self.threaded_camera_1 = None
         cv2.destroyAllWindows()
 
     # Finishボタンの実装
