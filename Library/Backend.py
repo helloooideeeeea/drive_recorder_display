@@ -2,7 +2,7 @@ import subprocess
 from Constraints import *
 from Library import log_dir, ymd, create_video_path
 import psutil
-
+from loguru import logger
 
 class Backend:
 
@@ -50,6 +50,8 @@ class Backend:
             f"h264parse ! " \
             f"mpegtsmux name=mux ! " \
             f"hlssink max-files=0 target-duration=60 location={path}segment%05d.ts playlist-location={path}playlist.m3u8"
+
+        logger.info(f"command:{command}")
         return command
 
 
