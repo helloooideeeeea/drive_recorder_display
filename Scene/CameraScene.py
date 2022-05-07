@@ -39,16 +39,15 @@ class CameraScene(Scene):
         ret0, img0 = self.frame0.read()
         ret1, img1 = self.frame1.read()
 
-        #
-        img0 = cv2.resize(img0, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
-        img1 = cv2.resize(img1, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
+        if not ret0:
+            img0 = cv2.resize(img0, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
+            pygame_image1 = CameraSettings.convert_opencv_img_to_pygame(opencv_image=img0)
+            self.screen.blit(pygame_image1, (0, 0))
 
-        #
-        pygame_image1 = CameraSettings.convert_opencv_img_to_pygame(opencv_image=img0)
-        pygame_image2 = CameraSettings.convert_opencv_img_to_pygame(opencv_image=img1)
-
-        self.screen.blit(pygame_image1, (0, 0))
-        self.screen.blit(pygame_image2, (CAPTURE_IMAGE_WIDTH, 0))
+        if not ret1:
+            img1 = cv2.resize(img1, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
+            pygame_image2 = CameraSettings.convert_opencv_img_to_pygame(opencv_image=img1)
+            self.screen.blit(pygame_image2, (CAPTURE_IMAGE_WIDTH, 0))
 
         for sprite in self.sprite_group:
             sprite.draw(self.screen)
