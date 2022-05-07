@@ -16,6 +16,7 @@ class ThreadedCamera(object):
         self.capture = cv2.VideoCapture(src)
         self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 2)
 
+        self.frame = None
         self.thread = Thread(target=self.update, args=())
         self.thread.daemon = True
         self.thread.start()
