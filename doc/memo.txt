@@ -43,6 +43,8 @@ sudo /usr/bin/systemctl daemon-reload
 sudo /usr/bin/systemctl enable my_app.service
 起動ログ確認
 sudo journalctl -u my_app.service
+ジャーナルログの削除
+sudo journalctl --vacuum-size=1K
 
 仮想デバイスを自動で２つ作るようにする
 echo "options v4l2loopback video_nr=77,99" | sudo tee -a /etc/modprobe.d/v4l2loopback.conf
