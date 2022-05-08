@@ -11,12 +11,15 @@ load_dotenv()  # .env読込
 
 
 class CameraScene(Scene):
+
     BUTTON_LEFT_MARGIN = 10
     BUTTON_TOP_MARGIN = 10
     outside_btn = None
     inside_btn = None
 
     capture = None
+
+    is_locked = False
 
     def __init__(self, window):
         self.window = window
@@ -63,10 +66,13 @@ class CameraScene(Scene):
 
     # Windowクラスからタップ位置のお知らせがくる
     def click_notify(self, position):
-        for s in self.sprite_group:
-            if s.rect.collidepoint(position):
-                s.clicked()
-                break
+        if not self.is_locked:
+            for s in self.sprite_group:
+                if s.rect.collidepoint(position):
+                    self.is_locked = True
+                    s.clicked()
+                    self.is_locked = False
+                    break
 
     # Windowクラスからアプリケーション終了のお知らせがくる
     def before_finish(self):
