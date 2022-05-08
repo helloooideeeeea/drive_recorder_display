@@ -9,7 +9,6 @@ from Library.UI import UI
 from Library.SpriteSheet import SpriteSheet
 from dotenv import load_dotenv
 load_dotenv()  # .env読込
-from loguru import logger
 
 
 class ThreadedCamera(object):
@@ -27,10 +26,7 @@ class ThreadedCamera(object):
 
     def update(self):
         while True:
-            logger.info(f"src={self.src} isOpened {self.capture.isOpened()}")
-            logger.info(f"src={self.src} is runnning")
             ret, frame = self.capture.read()
-            logger.info(f"src={self.src} read")
             if ret:
                 frame = cv2.resize(frame, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
                 self.frame = CameraSettings.convert_opencv_img_to_pygame(opencv_image=frame)
