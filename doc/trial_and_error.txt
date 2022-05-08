@@ -37,13 +37,11 @@ v4l2-ctl -d /dev/video-inside --all
 sudo modprobe v4l2loopback
 
 複数の仮想カメラデバイスをつくる。
-# video66とvideo88は、録音専用デバイス。video66は、内側カメラ。video88は、外側カメラ
 # video77とvideo99は、プログラムアクセス用。video77は、内側カメラ。video99は、外側カメラ
-sudo modprobe v4l2loopback video_nr=66,77,88,99
+sudo modprobe v4l2loopback video_nr=77,99
 
 仮想カメラデバイスを削除
 sudo modprobe -r v4l2loopback
-
 
 マルチで送る場合（こっちを採用）
 

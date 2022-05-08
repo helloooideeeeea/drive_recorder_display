@@ -43,8 +43,8 @@ sudo /usr/bin/systemctl enable my_app.service
 起動ログ確認
 sudo journalctl -u my_app.service
 
-仮想デバイスを自動で４つ作るようにする
-echo "options v4l2loopback video_nr=66,77,88,99" | sudo tee -a /etc/modprobe.d/v4l2loopback.conf
+仮想デバイスを自動で２つ作るようにする
+echo "options v4l2loopback video_nr=77,99" | sudo tee -a /etc/modprobe.d/v4l2loopback.conf
 echo v4l2loopback | sudo tee -a /etc/modules-load.d/modules.conf
 
 
@@ -57,3 +57,8 @@ SD書き込み
 diskutil list
 diskutil umountDisk /dev/disk4
 sudo dd if=./raspi-backup.img of=/dev/disk4 bs=1m
+
+タッチポジションの反転
+https://www.gechic.com/ja/raspberry-pi-touch-monitor-rotate-touch-screen-rotate-settings/
+/usr/share/X11/xorg.conf.d/40-libinput.conf
++ Option "TransformationMatrix" "-1 0 1 0 -1 1 0 0 1"
