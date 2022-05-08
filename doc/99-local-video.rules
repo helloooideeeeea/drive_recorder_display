@@ -1,6 +1,6 @@
 # /etc/udev/rules.d/99-local-video.rules
 
-#web camera for ELECOM 8MP Webcam: ELECOM 8MP W
-KERNEL=="video*",SUBSYSTEM=="video4linux",SUBSYSTEMS=="usb",ATTRS{idProduct}=="701c",ATTRS{idVendor}=="056e",ENV{ID_V4L_CAPABILITIES}==":capture:",SYMLINK+="video-outside"
+#Depstech webcam MIC
+KERNEL=="video*",SUBSYSTEM=="video4linux",SUBSYSTEMS=="usb",ATTRS{idProduct}=="28c4",ATTRS{idVendor}=="1bcf",ENV{ID_V4L_CAPABILITIES}==":capture:",SYMLINK+="video-outside"
 #web camera for no maker
 KERNEL=="video*",SUBSYSTEM=="video4linux",SUBSYSTEMS=="usb",ATTRS{idProduct}=="0103",ATTRS{idVendor}=="1d6c",ENV{ID_V4L_CAPABILITIES}==":capture:",SYMLINK+="video-inside"
