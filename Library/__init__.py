@@ -47,8 +47,10 @@ def video_path(prefix):
 
 def create_video_path(prefix):
     path = data_dir() + prefix + '/' + ymdhm()
-    os.mkdir(path)
+
+    os.makedirs(path, exist_ok=True)
     return path + '/'
+
 
 def make_random_str(n=8):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=n))

@@ -3,61 +3,60 @@ from Scene import Scene
 from pygame.locals import *
 from Constraints import *
 from Library.CameraSettings import CameraSettings
-from threading import Thread
 import cv2, time, os
-from Library.UI import UI
-from Library.SpriteSheet import SpriteSheet
+from Library import is_debug
 from dotenv import load_dotenv
+
 load_dotenv()  # .env読込
 
 
-class ThreadedCamera(object):
-    def __init__(self, src):
-        self.capture = cv2.VideoCapture(src)
-
-        self.src = src
-        self.frame = None
-        self.thread = Thread(target=self.update, args=())
-        self.thread.daemon = True
-        self.thread.start()
-
-    def stop(self):
-        pass
-
-    def update(self):
-        while True:
-            ret, frame = self.capture.read()
-            if ret:
-                frame = cv2.resize(frame, (CAPTURE_IMAGE_WIDTH, CAPTURE_IMAGE_HEIGHT))
-                self.frame = CameraSettings.convert_opencv_img_to_pygame(opencv_image=frame)
-            time.sleep(1/5)
-
-
 class CameraScene(Scene):
-    window = None
-    screen = None
-    sprite_group = None
+    BUTTON_LEFT_MARGIN = 10
+    BUTTON_TOP_MARGIN = 10
+    outside_btn = None
+    inside_btn = None
+
+    capture = None
 
     def __init__(self, window):
-
         self.window = window
         self.screen = window.screen
         self.sprite_group = pygame.sprite.RenderUpdates()
 
-        btn = self.FinishButton(self)
-        self.sprite_group.add(btn)
+        self.inside_camera_src = os.getenv('INSIDE_CAMERA')
+        self.outside_camera_src = os.getenv('OUTSIDE_CAMERA')
+        self.current_camera_src = self.outside_camera_src
 
-        self.threaded_camera_0 = ThreadedCamera(os.getenv('INSIDE_CAMERA'))
-        self.threaded_camera_1 = ThreadedCamera(os.getenv('OUTSIDE_CAMERA'))
+        history_btn = self.CameraSceneButton(">> History", Rect(self.BUTTON_LEFT_MARGIN, WINDOW_HEIGHT - 40, 110, 50),
+                                             self.history_button_clicked)
+        self.sprite_group.add(history_btn)
+
+        self.setup_camera(self.current_camera_src)
+
+    def setup_camera(self, src):
+
+        rect = Rect(self.BUTTON_LEFT_MARGIN, self.BUTTON_TOP_MARGIN, 140, 50)
+        if self.current_camera_src == self.inside_camera_src:
+            self.outside_btn = self.CameraSceneButton(">> Outside Camera", rect, self.switch_outside_camera)
+            self.sprite_group.add(self.outside_btn)
+            self.sprite_group.remove(self.inside_btn)
+        elif self.current_camera_src == self.outside_camera_src:
+            self.inside_btn = self.CameraSceneButton(">> Inside Camera", rect, self.switch_inside_camera)
+            self.sprite_group.add(self.inside_btn)
+            self.sprite_group.remove(self.outside_btn)
+
+        if is_debug():
+            src = int(src)
+        self.capture = cv2.VideoCapture(src)
 
     # Windowクラスが実行するループ
     def loop(self):
-
         self.screen.fill((255, 255, 255))  # 背景色
-        if self.threaded_camera_0.frame is not None:
-            self.screen.blit(self.threaded_camera_0.frame, (0, 0))
-        if self.threaded_camera_0.frame is not None:
-            self.screen.blit(self.threaded_camera_1.frame, (CAPTURE_IMAGE_WIDTH, 0))
+        ret, frame = self.capture.read()
+        if ret:
+            frame = cv2.resize(frame, (WINDOW_WIDTH, WINDOW_HEIGHT))
+            frame = CameraSettings.convert_opencv_img_to_pygame(opencv_image=frame)
+            self.screen.blit(frame, (0, 0))
 
         for sprite in self.sprite_group:
             sprite.draw(self.screen)
@@ -73,65 +72,43 @@ class CameraScene(Scene):
     def before_finish(self):
         self.defer()
 
-    # Finishボタンがクリックされたら、シーンの切り替え命令を出す
-    def finish_button_clicked(self):
+    # Historyボタンがクリックされたら、シーンの切り替え命令を出す
+    def history_button_clicked(self):
         self.defer()
         self.window.switch_scene(FILE_SELECT_SCENE_NAME)
 
+    def switch_inside_camera(self):
+        self.defer()
+        self.current_camera_src = self.inside_camera_src
+        self.setup_camera(self.current_camera_src)
+
+    def switch_outside_camera(self):
+        self.defer()
+        self.current_camera_src = self.outside_camera_src
+        self.setup_camera(self.current_camera_src)
+
     def defer(self):
-        self.threaded_camera_0.stop()
-        self.threaded_camera_1.stop()
-        time.sleep(1)
-        self.threaded_camera_0.capture.release()
-        self.threaded_camera_1.capture.release()
-        self.threaded_camera_0 = None
-        self.threaded_camera_1 = None
-        cv2.destroyAllWindows()
+        if self.capture is not None:
+            self.capture.release()
+            time.sleep(1)
+            self.capture = None
+            cv2.destroyAllWindows()
 
-    # Finishボタンの実装
-    class FinishButton(pygame.sprite.Sprite):
-        content = None
-        content_rect = None
-        background = None
+    # Cameraシーンボタンの実装
+    class CameraSceneButton(pygame.sprite.Sprite):
 
-        scene = None
-
-        WIDTH = 100
-        HEIGHT = 30
-        MARGIN_BOTTOM = 20
-
-        @staticmethod
-        def string_center(center_position, font_size):
-            font_width = font_size[0]
-            font_height = font_size[1]
-            center_x = center_position[0]
-            center_y = center_position[1]
-            return center_x - font_width / 2, center_y - font_height / 2
-
-        def __init__(self, scene, *groups):
+        def __init__(self, str, rect, callback, *groups):
             super().__init__(*groups)
 
-            self.scene = scene
+            self.rect = rect
+            self.callback = callback
 
-            font = pygame.font.SysFont(None, 16)
-            font_color = (0, 0, 0)
-            str = "History"
+            font = pygame.font.SysFont(None, 30)
+            font_color = (0, 145, 255)
             self.content = font.render(str, True, font_color)
 
-            font_size = font.size(str)
-            content_center = UI.string_center(
-                (WINDOW_WIDTH / 2, CAPTURE_IMAGE_HEIGHT + self.MARGIN_BOTTOM + self.HEIGHT / 2), font_size)
-            self.content_rect = Rect(content_center[0], content_center[1], font_size[0], font_size[1])
-
-            self.background = pygame.Surface((self.WIDTH, self.HEIGHT))
-            self.background.fill(pygame.Color('dodgerblue1'))
-            # box center
-            self.rect = Rect(WINDOW_WIDTH / 2 - self.WIDTH / 2, CAPTURE_IMAGE_HEIGHT + self.MARGIN_BOTTOM, self.WIDTH,
-                             self.HEIGHT)
-
         def draw(self, screen):
-            screen.blit(self.background, self.rect)
-            screen.blit(self.content, self.content_rect)
+            screen.blit(self.content, self.rect)
 
         def clicked(self):
-            self.scene.finish_button_clicked()
+            self.callback()
