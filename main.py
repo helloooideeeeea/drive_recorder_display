@@ -22,7 +22,7 @@ class WindowLoop:
             self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         else:
             self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.FULLSCREEN)
-        self.current_scene = StartupScene(window=self)
+        self.current_scene = CameraScene(window=self)
 
     def loop(self):
 

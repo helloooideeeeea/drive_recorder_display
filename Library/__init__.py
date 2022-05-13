@@ -42,7 +42,11 @@ def ymdhm():
 
 
 def video_path(prefix):
-    return data_dir() + prefix + '_' + ymdhm() + '.mp4'
+    return data_dir() + prefix + '_' + ymdhm() + '.avi'
+
+
+def audio_path(prefix):
+    return data_dir() + prefix + '_' + ymdhm() + '.mp3'
 
 
 def create_video_path(prefix):

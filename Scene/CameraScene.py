@@ -4,9 +4,9 @@ from pygame.locals import *
 from Constraints import *
 from Library.CameraSettings import CameraSettings
 import cv2, time, os
-from Library import is_debug
+from Library.Recorder import Recorder
+from loguru import logger
 from dotenv import load_dotenv
-
 load_dotenv()  # .env読込
 
 
@@ -17,26 +17,31 @@ class CameraScene(Scene):
     outside_btn = None
     inside_btn = None
 
-    capture = None
+    recoder = None
 
     is_locked = False
 
     def __init__(self, window):
+
+        self.recoder = Recorder()
+        self.recoder.start_AV_recording()
+
         self.window = window
         self.screen = window.screen
         self.sprite_group = pygame.sprite.RenderUpdates()
 
         self.inside_camera_src = os.getenv('INSIDE_CAMERA')
         self.outside_camera_src = os.getenv('OUTSIDE_CAMERA')
+
         self.current_camera_src = self.outside_camera_src
 
         history_btn = self.CameraSceneButton(">> History", Rect(self.BUTTON_LEFT_MARGIN, WINDOW_HEIGHT - 40, 110, 50),
                                              self.history_button_clicked)
         self.sprite_group.add(history_btn)
 
-        self.setup_camera(self.current_camera_src)
+        self.setup_camera()
 
-    def setup_camera(self, src):
+    def setup_camera(self):
 
         rect = Rect(self.BUTTON_LEFT_MARGIN, self.BUTTON_TOP_MARGIN, 140, 50)
         if self.current_camera_src == self.inside_camera_src:
@@ -48,15 +53,15 @@ class CameraScene(Scene):
             self.sprite_group.add(self.inside_btn)
             self.sprite_group.remove(self.outside_btn)
 
-        if is_debug():
-            src = int(src)
-        self.capture = cv2.VideoCapture(src)
-
     # Windowクラスが実行するループ
     def loop(self):
         self.screen.fill((255, 255, 255))  # 背景色
-        ret, frame = self.capture.read()
-        if ret:
+        frame = None
+        if self.current_camera_src == self.inside_camera_src:
+            frame = self.recoder.inside_video_thread.frame
+        elif self.current_camera_src == self.outside_camera_src:
+            frame = self.recoder.outside_video_thread.frame
+        if frame is not None:
             frame = cv2.resize(frame, (WINDOW_WIDTH, WINDOW_HEIGHT))
             frame = CameraSettings.convert_opencv_img_to_pygame(opencv_image=frame)
             self.screen.blit(frame, (0, 0))
@@ -80,25 +85,20 @@ class CameraScene(Scene):
 
     # Historyボタンがクリックされたら、シーンの切り替え命令を出す
     def history_button_clicked(self):
-        self.defer()
         self.window.switch_scene(FILE_SELECT_SCENE_NAME)
 
     def switch_inside_camera(self):
-        self.defer()
         self.current_camera_src = self.inside_camera_src
-        self.setup_camera(self.current_camera_src)
+        self.setup_camera()
 
     def switch_outside_camera(self):
-        self.defer()
         self.current_camera_src = self.outside_camera_src
-        self.setup_camera(self.current_camera_src)
+        self.setup_camera()
 
     def defer(self):
-        if self.capture is not None:
-            self.capture.release()
-            time.sleep(1)
-            self.capture = None
-            cv2.destroyAllWindows()
+        logger.info("recording Finish")
+        self.recoder.stop_AV_recording()
+
 
     # Cameraシーンボタンの実装
     class CameraSceneButton(pygame.sprite.Sprite):
