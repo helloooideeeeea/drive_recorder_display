@@ -1,11 +1,11 @@
 from Scene import Scene
 from pygame.locals import *
-from Library import make_random_str, inside_video_data_dir, outside_video_data_dir
+from Library import make_random_str, data_dir
 from Library.UI import UI
 from Constraints import *
 import glob
 import math
-
+import os
 
 class FileSelectScene(Scene):
     PER_MOVIES_NUM = 6
@@ -34,22 +34,22 @@ class FileSelectScene(Scene):
 
     def dir_salvage(self):
         items = []
-        files = []
-        inside_files = glob.glob(inside_video_data_dir() + "*")
-        outside_files = glob.glob(outside_video_data_dir() + "*")
-        files.extend(inside_files)
-        files.extend(outside_files)
+        files = glob.glob(data_dir() + "*")
 
         arr = []
-        for dir in files:
-            video_date = dir.split('/')[-1]
-            which = dir.split('/')[-2]
-            arr.append({'video_date': video_date, 'which': which})
+        for file in files:
+            file_name = file.split('/')[-1]
+            which = file_name.split('_')[-2]
+            p = os.path.splitext(file_name)
+            ext = p[-1]
+            video_date = p[0].split('_')[1]
+
+            arr.append({'video_date': video_date, 'which': which, 'ext': ext})
 
         sorted_arr = sorted(arr, key=lambda x: x['video_date'], reverse=True)
 
-        for index, dir in enumerate(sorted_arr):
-            path = '/'.join([dir['which'], dir['video_date']])
+        for index, file in enumerate(sorted_arr):
+            path = file['which']+'_'+file['video_date']+file["ext"]
             surface, rect = self.create_item(index, path)
             items.append({"surface": surface, "rect": rect, "path": path})
 

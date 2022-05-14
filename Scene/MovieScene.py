@@ -20,7 +20,7 @@ class MovieScene(Scene):
         self.back_surface, self.back_rect = UI.create_back()
 
         self.isPlaying = False
-        self.vid = Video(data_dir()+self.path+'/playlist.m3u8')
+        self.vid = Video(data_dir()+self.path)
         self.vid.set_size((WINDOW_WIDTH, WINDOW_HEIGHT))
         #print(self.vid.get_file_data())
 

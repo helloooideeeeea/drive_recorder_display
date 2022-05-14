@@ -5,3 +5,4 @@ pymediainfo
 ffpyplayer
 python-ffmpeg-video-streaming
 loguru
+pyaudio
