@@ -1,9 +1,11 @@
 import cv2, os
+import datetime
 from dotenv import load_dotenv
 load_dotenv()  # .env読込
 filepath = 'test.avi'
+import time
 
-cap = cv2.VideoCapture(os.getenv('OUTSIDE_CAMERA'))
+cap = cv2.VideoCapture(int(os.getenv('OUTSIDE_CAMERA')))
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
@@ -19,12 +21,21 @@ video = cv2.VideoWriter(filepath, cv2.VideoWriter_fourcc(*'XVID'), fps, (int(w),
 while(True):
     # カメラから映像を１枚読込む
     ret, img = cap.read()
+    if ret:
+        cv2.putText(img,
+                text=datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+                org=(0, 475),
+                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                fontScale=0.6,
+                color=(255, 255, 255),
+                thickness=1,
+                lineType=cv2.LINE_4)
 
-    # カメラから読込んだ映像をファイルに書き込む
-    video.write(img)
+        # カメラから読込んだ映像をファイルに書き込む
+        video.write(img)
 
-    # カメラから読み込んだ映像を画面に表示する
-    cv2.imshow('frame',img)
+        # カメラから読み込んだ映像を画面に表示する
+        cv2.imshow('frame',img)
 
     # エスケープキーが押されたら処理終了
     if cv2.waitKey(1) & 0xFF == 27:

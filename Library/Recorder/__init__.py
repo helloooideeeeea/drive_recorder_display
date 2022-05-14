@@ -1,5 +1,6 @@
 from __future__ import print_function, division
 import numpy as np
+import datetime
 import cv2
 import pyaudio
 import wave
@@ -31,7 +32,7 @@ class VideoRecorder:
         h = self.video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
         self.fps = self.video_cap.get(cv2.CAP_PROP_FPS)
 
-        self.video_out = cv2.VideoWriter(self.video_filename, cv2.VideoWriter_fourcc(*'XVID'), self.fps, (int(w), int(h)))
+        self.video_out = cv2.VideoWriter(self.video_filename, cv2.VideoWriter_fourcc(*'MJPG'), self.fps, (int(w), int(h)))
         self.frame_counts = 1
         self.start_time = time.time()
 
@@ -44,6 +45,9 @@ class VideoRecorder:
             if ret:
                 # 表示フレーム
                 self.frame = video_frame
+
+                video_frame = VideoRecorder.frame_processing(video_frame)
+
                 self.video_out.write(video_frame)
                 # print(str(counter) + " " + str(self.frame_counts) + " frames written " + str(timer_current))
                 self.frame_counts += 1
@@ -53,6 +57,18 @@ class VideoRecorder:
                 # gray = cv2.cvtColor(video_frame, cv2.COLOR_BGR2GRAY)
                 # cv2.imshow('video_frame', gray)
                 # cv2.waitKey(1)
+
+    @staticmethod
+    def frame_processing(frame):
+        cv2.putText(frame,
+                    text=datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+                    org=(0, WINDOW_HEIGHT-5),
+                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                    fontScale=0.6,
+                    color=(255, 255, 255),
+                    thickness=1,
+                    lineType=cv2.LINE_4)
+        return frame
 
     def stop(self):
         if self.open:
