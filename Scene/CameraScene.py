@@ -52,9 +52,9 @@ class CameraScene(Scene):
     def loop(self):
         self.screen.fill((255, 255, 255))  # 背景色
         frame = None
-        if self.current_camera_src == self.inside_camera_src and self.recoder.inside_video_thread is not None:
+        if self.current_camera_src == self.inside_camera_src:
             frame = self.recoder.inside_video_thread.frame
-        elif self.current_camera_src == self.outside_camera_src and self.recoder.outside_video_thread is not None:
+        elif self.current_camera_src == self.outside_camera_src:
             frame = self.recoder.outside_video_thread.frame
         if frame is not None:
             frame = cv2.resize(frame, (WINDOW_WIDTH, WINDOW_HEIGHT))

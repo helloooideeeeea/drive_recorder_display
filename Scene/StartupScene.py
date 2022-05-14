@@ -29,7 +29,7 @@ class StartupScene(Scene):
             self.onlyOnce = False
             recoder = Recorder()
             recoder.start_AV_recording()
-            self.window.setRecorder = recoder
+            self.window.set_recorder(recoder)
             self.window.switch_scene(CAMERA_SCENE_NAME)
 
     def click_notify(self, position):
