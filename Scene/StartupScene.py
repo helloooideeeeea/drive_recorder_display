@@ -3,6 +3,7 @@ from Scene import Scene
 from pygame.locals import *
 from Constraints import *
 from Library.UI import UI
+from Library.Recorder import Recorder
 
 
 class StartupScene(Scene):
@@ -26,6 +27,9 @@ class StartupScene(Scene):
             sprite.draw(self.screen)
         if self.onlyOnce:
             self.onlyOnce = False
+            recoder = Recorder()
+            recoder.start_AV_recording()
+            self.window.setRecorder = recoder
             self.window.switch_scene(CAMERA_SCENE_NAME)
 
     def click_notify(self, position):

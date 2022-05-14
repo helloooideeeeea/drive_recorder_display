@@ -16,16 +16,11 @@ class CameraScene(Scene):
     BUTTON_TOP_MARGIN = 10
     outside_btn = None
     inside_btn = None
-
-    recoder = None
-
     is_locked = False
 
-    def __init__(self, window):
+    def __init__(self, window, recorder):
 
-        self.recoder = Recorder()
-        self.recoder.start_AV_recording()
-
+        self.recoder = recorder
         self.window = window
         self.screen = window.screen
         self.sprite_group = pygame.sprite.RenderUpdates()

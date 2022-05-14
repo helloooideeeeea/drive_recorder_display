@@ -14,6 +14,7 @@ class WindowLoop:
 
     running = True
     current_scene = None
+    recorder = None
 
     def __init__(self):
         pygame.init()  # 初期化
@@ -48,12 +49,14 @@ class WindowLoop:
 
     def switch_scene(self, name, data = None):
         if name == CAMERA_SCENE_NAME:
-            self.current_scene = CameraScene(window=self)
+            self.current_scene = CameraScene(window=self, recorder=self.recorder)
         elif name == FILE_SELECT_SCENE_NAME:
             self.current_scene = FileSelectScene(window=self, data=data)
         elif name == MOVIE_SCENE_NAME:
             self.current_scene = MovieScene(window=self, data=data)
 
+    def set_recorder(self, recorder):
+        self.recorder = recorder
 
 def main():
     logger.add(f'{log_dir()}app_{ymd()}.log')
