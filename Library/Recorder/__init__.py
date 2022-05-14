@@ -6,6 +6,7 @@ import wave
 import threading
 import time
 import os
+from Constraints import *
 from dotenv import load_dotenv
 from Library import video_path, audio_path, is_debug
 
@@ -15,17 +16,18 @@ load_dotenv()  # .env読込
 class VideoRecorder:
     frame = None
 
-    def __init__(self, device, prefix, sizex=800, sizey=600, fps=30):
+    def __init__(self, device, prefix, sizex, sizey, fps):
         self.open = True
-        if is_debug():
-            device = int(device)
         self.device = device
         self.fps = fps
-        self.frameSize = (sizex, sizey)
         self.video_filename = video_path(prefix)
         self.video_cap = cv2.VideoCapture(self.device)
-        self.video_writer = cv2.VideoWriter_fourcc(*'MJPG')
-        self.video_out = cv2.VideoWriter(self.video_filename, self.video_writer, self.fps, self.frameSize)
+        self.video_cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+        self.video_cap.set(cv2.CAP_PROP_FRAME_WIDTH, sizex)
+        self.video_cap.set(cv2.CAP_PROP_FRAME_HEIGHT, sizey)
+        self.video_cap.set(cv2.CAP_PROP_FPS, self.fps)
+
+        self.video_out = cv2.VideoWriter(self.video_filename, cv2.VideoWriter_fourcc(*'XVID'), self.fps, (sizex, sizey))
         self.frame_counts = 1
         self.start_time = time.time()
 
@@ -109,8 +111,8 @@ class Recorder:
     outside_video_thread = None
 
     def start_AV_recording(self):
-        self.inside_video_thread = VideoRecorder(device=os.getenv('INSIDE_CAMERA'), prefix="inside")
-        self.outside_video_thread = VideoRecorder(device=os.getenv('OUTSIDE_CAMERA'), prefix="outside")
+        self.inside_video_thread = VideoRecorder(device=os.getenv('INSIDE_CAMERA'), prefix="inside", sizex=INSIDE_CAMERA_RECORDING_RESOLUTION_WIDTH, sizey=INSIDE_CAMERA_RECORDING_RESOLUTION_HEIGHT, fps=INSIDE_CAMERA_FRAME_RATE)
+        self.outside_video_thread = VideoRecorder(device=os.getenv('OUTSIDE_CAMERA'), prefix="outside", sizex=OUTSIDE_CAMERA_RECORDING_RESOLUTION_WIDTH, sizey=OUTSIDE_CAMERA_RECORDING_RESOLUTION_HEIGHT, fps=OUTSIDE_CAMERA_FRAME_RATE)
         # self.inside_audio_thread = AudioRecorder()
         # self.inside_audio_thread.start()
         self.inside_video_thread.start()
@@ -120,7 +122,7 @@ class Recorder:
         # self.inside_audio_thread.stop()
         self.outside_video_thread.stop()
         self.inside_video_thread.stop()
-        
+
         # Makes sure the threads have finished
         while threading.active_count() > 1:
             time.sleep(1)
