@@ -57,7 +57,7 @@ class VideoRecorder:
     def stop(self):
         if self.open:
             self.open = False
-            time.sleep(2)
+            time.sleep(3)
             self.video_out.release()
             self.video_cap.release()
 
