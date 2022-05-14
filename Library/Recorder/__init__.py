@@ -19,15 +19,19 @@ class VideoRecorder:
     def __init__(self, device, prefix, sizex, sizey, fps):
         self.open = True
         self.device = device
-        self.fps = fps
+
         self.video_filename = video_path(prefix)
         self.video_cap = cv2.VideoCapture(self.device)
         self.video_cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
         self.video_cap.set(cv2.CAP_PROP_FRAME_WIDTH, sizex)
         self.video_cap.set(cv2.CAP_PROP_FRAME_HEIGHT, sizey)
-        self.video_cap.set(cv2.CAP_PROP_FPS, self.fps)
+        self.video_cap.set(cv2.CAP_PROP_FPS, fps)
 
-        self.video_out = cv2.VideoWriter(self.video_filename, cv2.VideoWriter_fourcc(*'XVID'), self.fps, (sizex, sizey))
+        w = self.video_cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+        h = self.video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        self.fps = self.video_cap.get(cv2.CAP_PROP_FPS)
+
+        self.video_out = cv2.VideoWriter(self.video_filename, cv2.VideoWriter_fourcc(*'XVID'), self.fps, (int(w), int(h)))
         self.frame_counts = 1
         self.start_time = time.time()
 
