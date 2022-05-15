@@ -10,6 +10,7 @@ import os
 from Constraints import *
 from dotenv import load_dotenv
 from Library import video_path, audio_path, is_debug
+from loguru import logger
 
 load_dotenv()  # .env読込
 
@@ -131,8 +132,16 @@ class Recorder:
     outside_video_thread = None
 
     def start_AV_recording(self):
-        self.inside_video_thread = VideoRecorder(device=os.getenv('INSIDE_CAMERA'), prefix="inside", sizex=INSIDE_CAMERA_RECORDING_RESOLUTION_WIDTH, sizey=INSIDE_CAMERA_RECORDING_RESOLUTION_HEIGHT, fps=INSIDE_CAMERA_FRAME_RATE)
-        self.outside_video_thread = VideoRecorder(device=os.getenv('OUTSIDE_CAMERA'), prefix="outside", sizex=OUTSIDE_CAMERA_RECORDING_RESOLUTION_WIDTH, sizey=OUTSIDE_CAMERA_RECORDING_RESOLUTION_HEIGHT, fps=OUTSIDE_CAMERA_FRAME_RATE)
+        inside_camera = os.getenv('INSIDE_CAMERA')
+        outside_camera = os.getenv('OUTSIDE_CAMERA')
+        while True:
+            if os.path.exists(inside_camera) and os.path.exists(outside_camera):
+                break
+            time.sleep(1)
+            logger.info(f"{inside_camera} or {outside_camera} is not found")
+
+        self.inside_video_thread = VideoRecorder(device=inside_camera, prefix="inside", sizex=INSIDE_CAMERA_RECORDING_RESOLUTION_WIDTH, sizey=INSIDE_CAMERA_RECORDING_RESOLUTION_HEIGHT, fps=INSIDE_CAMERA_FRAME_RATE)
+        self.outside_video_thread = VideoRecorder(device=outside_camera, prefix="outside", sizex=OUTSIDE_CAMERA_RECORDING_RESOLUTION_WIDTH, sizey=OUTSIDE_CAMERA_RECORDING_RESOLUTION_HEIGHT, fps=OUTSIDE_CAMERA_FRAME_RATE)
         # self.inside_audio_thread = AudioRecorder()
         # self.inside_audio_thread.start()
         self.inside_video_thread.start()
