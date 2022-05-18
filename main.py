@@ -7,7 +7,7 @@ from Scene.StartupScene import StartupScene
 from Scene.MovieScene import MovieScene
 from Scene.FileSelectScene import FileSelectScene
 from loguru import logger
-from Library import log_dir,ymd, is_debug
+from Library import log_dir, ymd, is_debug
 
 
 class WindowLoop:
@@ -57,6 +57,10 @@ class WindowLoop:
 
     def set_recorder(self, recorder):
         self.recorder = recorder
+
+    def received_remove_external_power_supply_signal(self):
+        logger.info(f"received_remove_external_power_supply_signal")
+
 
 def main():
     logger.add(f'{log_dir()}app_{ymd()}.log')

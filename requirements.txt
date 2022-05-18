@@ -6,3 +6,5 @@ ffpyplayer
 python-ffmpeg-video-streaming
 loguru
 pyaudio
+wifi
+redis

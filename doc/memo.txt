@@ -39,8 +39,29 @@ Type=idle
 WantedBy=default.target
 EOT
 
+
+sudo tee -a /etc/systemd/system/watch_battery.service > /dev/null << EOT
+[Unit]
+Description=Start Battery Watching
+After=default.target
+Wants=default.target
+
+[Service]
+User=yasushi-sakita
+Group=yasushi-sakita
+WorkingDirectory=/home/yasushi-sakita/dev/python/drive_recorder_display
+ExecStart=/usr/bin/python3 watch_ups.py
+Type=idle
+
+[Install]
+WantedBy=default.target
+EOT
+
 sudo /usr/bin/systemctl daemon-reload
 sudo /usr/bin/systemctl enable my_app.service
+sudo /usr/bin/systemctl enable watch_battery.service
+
+
 起動ログ確認
 sudo journalctl -u my_app.service
 ジャーナルログの削除
