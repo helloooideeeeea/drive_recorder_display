@@ -12,6 +12,7 @@ class MovieScene(Scene):
 
     window = None
     screen = None
+    fps = None
 
     def __init__(self, window, data):
         self.path = data['path']
@@ -22,6 +23,7 @@ class MovieScene(Scene):
 
         self.isPlaying = False
         self.cap = cv2.VideoCapture(data_dir()+self.path)
+        self.fps = self.cap.get(cv2.CAP_PROP_FPS)
 
         self.play_image = UI.slice_icon_video_player()
         self.play_image_rect = UI.centered_rect(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, self.play_image.get_width(), self.play_image.get_height())
@@ -35,6 +37,7 @@ class MovieScene(Scene):
                 frame = cv2.resize(frame, (WINDOW_WIDTH, WINDOW_HEIGHT))
                 frame = CameraSettings.convert_opencv_img_to_pygame(opencv_image=frame)
                 self.screen.blit(frame, (0, 0))
+                pygame.time.wait(1/self.fps)
         else:
             self.screen.blit(self.play_image, self.play_image_rect)
         self.screen.blit(self.back_surface, self.back_rect)

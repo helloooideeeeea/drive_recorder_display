@@ -17,6 +17,8 @@ load_dotenv()  # .env読込
 
 class VideoRecorder:
     frame = None
+    fps = 5
+    frame_rate = 1/5
 
     def __init__(self, device, prefix, sizex, sizey, fps):
         self.open = True
@@ -31,16 +33,12 @@ class VideoRecorder:
 
         w = self.video_cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         h = self.video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-        self.fps = self.video_cap.get(cv2.CAP_PROP_FPS)
 
         self.video_out = cv2.VideoWriter(self.video_filename, cv2.VideoWriter_fourcc(*'MJPG'), self.fps, (int(w), int(h)))
-        self.frame_counts = 1
-        self.start_time = time.time()
+        # self.start_time = time.time()
 
     def record(self):
-        # counter = 1
-        timer_start = time.time()
-        timer_current = 0
+        timer_current = time.time()
         while self.open:
             ret, video_frame = self.video_cap.read()
             if ret:
@@ -50,14 +48,15 @@ class VideoRecorder:
                 video_frame = VideoRecorder.frame_processing(video_frame)
 
                 self.video_out.write(video_frame)
-                # print(str(counter) + " " + str(self.frame_counts) + " frames written " + str(timer_current))
-                self.frame_counts += 1
-                # counter += 1
-                # timer_current = time.time() - timer_start
-                time.sleep(1 / self.fps)
-                # gray = cv2.cvtColor(video_frame, cv2.COLOR_BGR2GRAY)
-                # cv2.imshow('video_frame', gray)
-                # cv2.waitKey(1)
+
+                # 1秒5フレームで保存
+                now = time.time()
+                frame_time = now - timer_current
+                if self.frame_rate > frame_time:
+                    time.sleep(self.frame_rate - frame_time)
+                else:
+                    logger.info(f"frame slow : {frame_time}")
+                timer_current = now
 
     @staticmethod
     def frame_processing(frame):

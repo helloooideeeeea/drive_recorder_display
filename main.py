@@ -8,6 +8,7 @@ from Scene.MovieScene import MovieScene
 from Scene.FileSelectScene import FileSelectScene
 from loguru import logger
 from Library import log_dir, ymd, is_debug
+from Library.Redis import Redis
 
 
 class WindowLoop:
@@ -15,6 +16,7 @@ class WindowLoop:
     running = True
     current_scene = None
     recorder = None
+    redis = None
 
     def __init__(self):
         pygame.init()  # 初期化
@@ -23,6 +25,10 @@ class WindowLoop:
             self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         else:
             self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.FULLSCREEN)
+
+        self.redis = Redis(window=self)
+        self.redis.start_ups_subscribe()
+
         self.current_scene = StartupScene(window=self)
 
     def loop(self):
