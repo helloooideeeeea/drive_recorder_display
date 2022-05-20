@@ -21,7 +21,7 @@ class VideoRecorder:
     frame_rate = 1/5
 
     def __init__(self, device, prefix, sizex, sizey, fps):
-        self.open = True
+        self.isRunning = True
         self.device = device
 
         self.video_filename = video_path(prefix)
@@ -39,7 +39,7 @@ class VideoRecorder:
 
     def record(self):
         timer_current = time.time()
-        while self.open:
+        while self.isRunning:
             ret, video_frame = self.video_cap.read()
             if ret:
                 # 表示フレーム
@@ -57,6 +57,7 @@ class VideoRecorder:
                 else:
                     logger.info(f"frame slow : {frame_time}")
                 timer_current = now
+        logger.info(f"{self.device} 's thread end.")
 
     @staticmethod
     def frame_processing(frame):
@@ -71,10 +72,11 @@ class VideoRecorder:
         return frame
 
     def stop(self):
-        if self.open:
-            self.open = False
-            time.sleep(3)
+        self.isRunning = False
+        time.sleep(3)
+        if self.video_out.isOpened():
             self.video_out.release()
+        if self.video_cap.isOpened():
             self.video_cap.release()
 
     def start(self):
@@ -85,7 +87,7 @@ class VideoRecorder:
 class AudioRecorder:
 
     def __init__(self, rate=44100, fpb=1024, channels=2):
-        self.open = True
+        self.isRunning = True
         self.rate = rate
         self.frames_per_buffer = fpb
         self.channels = channels
@@ -101,15 +103,15 @@ class AudioRecorder:
 
     def record(self):
         self.stream.start_stream()
-        while self.open:
+        while self.isRunning:
             data = self.stream.read(self.frames_per_buffer)
             self.audio_frames.append(data)
-            if not self.open:
-                break
+        logger.info(f"{self.device} 's thread end.")
 
     def stop(self):
-        if self.open:
-            self.open = False
+        if self.isRunning:
+            self.isRunning = False
+            time.sleep(3)
             self.stream.stop_stream()
             self.stream.close()
             self.audio.terminate()
@@ -119,6 +121,7 @@ class AudioRecorder:
             waveFile.setframerate(self.rate)
             waveFile.writeframes(b''.join(self.audio_frames))
             waveFile.close()
+
 
     def start(self):
         audio_thread = threading.Thread(target=self.record)
@@ -141,15 +144,18 @@ class Recorder:
 
         self.inside_video_thread = VideoRecorder(device=inside_camera, prefix="inside", sizex=INSIDE_CAMERA_RECORDING_RESOLUTION_WIDTH, sizey=INSIDE_CAMERA_RECORDING_RESOLUTION_HEIGHT, fps=INSIDE_CAMERA_FRAME_RATE)
         self.outside_video_thread = VideoRecorder(device=outside_camera, prefix="outside", sizex=OUTSIDE_CAMERA_RECORDING_RESOLUTION_WIDTH, sizey=OUTSIDE_CAMERA_RECORDING_RESOLUTION_HEIGHT, fps=OUTSIDE_CAMERA_FRAME_RATE)
-        # self.inside_audio_thread = AudioRecorder()
-        # self.inside_audio_thread.start()
+        self.inside_audio_thread = AudioRecorder()
+        self.inside_audio_thread.start()
         self.inside_video_thread.start()
         self.outside_video_thread.start()
 
     def stop_AV_recording(self):
-        # self.inside_audio_thread.stop()
-        self.outside_video_thread.stop()
-        self.inside_video_thread.stop()
+        if self.inside_audio_thread is not None:
+            self.inside_audio_thread.stop()
+        if self.inside_video_thread is not None:
+            self.inside_video_thread.stop()
+        if self.outside_video_thread is not None:
+            self.outside_video_thread.stop()
 
         # Makes sure the threads have finished
         while threading.active_count() > 1:

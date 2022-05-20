@@ -66,6 +66,9 @@ class WindowLoop:
 
     def received_remove_external_power_supply_signal(self):
         logger.info(f"received_remove_external_power_supply_signal")
+        if self.recorder is not None:
+            self.recorder.stop_AV_recording()
+            # TODO AVI attach Audio
 
 
 def main():
