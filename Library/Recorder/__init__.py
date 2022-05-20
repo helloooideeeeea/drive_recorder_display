@@ -106,7 +106,7 @@ class AudioRecorder:
         while self.isRunning:
             data = self.stream.read(self.frames_per_buffer)
             self.audio_frames.append(data)
-        logger.info(f"{self.device} 's thread end.")
+        logger.info(f"audio recording thread end.")
 
     def stop(self):
         if self.isRunning:
