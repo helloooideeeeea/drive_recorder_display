@@ -8,7 +8,6 @@ class Wifi:
         self.interface_name = "wlan0"
 
     def search(self):
-        # sudo iwlist wlan0 scan | grep -ioE 'ssid:(.*)'
         command = """sudo iwlist {} scan | grep -ioE 'ssid:(.*)'"""
         result = os.popen(command.format(self.interface_name))
         result = list(result)
@@ -16,6 +15,10 @@ class Wifi:
             raise Exception()
         ssid_list = [item.lstrip('SSID:').strip('"\n') for item in result]
         return ssid_list
+
+    def find_SSID(self, ssid):
+        ssid_list = self.search()
+        return ssid in ssid_list
 
     def connection(self, ssid, password):
         cmd = "iwconfig {} password {} iface {}".format(ssid, password, self.interface_name)
