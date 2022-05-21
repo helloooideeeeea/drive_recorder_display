@@ -1,81 +1,27 @@
-import wifi
-
-def search():
-    wifilist = []
-    cells = wifi.Cell.all('wlan0')
-    for cell in cells:
-        wifilist.append(cell)
-    return wifilist
+import os
+from loguru import logger
 
 
-def find_from_search_list(ssid):
-    wifilist = search()
-    for cell in wifilist:
-        if cell.ssid == ssid:
-            return cell
-    return False
+class Wifi:
 
+    def __init__(self, ssid, password):
+        self.ssid = ssid
+        self.password = password
+        self.interface_name = "wlan0"
+        self.main_dict = {}
 
-def find_from_saved_list(ssid):
-    cell = wifi.Scheme.find('wlan0', ssid)
-    if cell:
-        return cell
-    return False
+    def search(self):
+        command = """sudo iwlist {} scan | grep -ioE 'ssid:"(.*{}.*)'"""
+        result = os.popen(command.format(self.interface_name, self.ssid))
+        result = list(result)
+        if "Device or resource busy" in result:
+            raise Exception()
+        ssid_list = [item.lstrip('SSID:').strip('"\n') for item in result]
+        return ssid_list
 
-
-def connect(ssid, password=None):
-    cell = find_from_search_list(ssid)
-
-    if cell:
-        savedcell = find_from_saved_list(cell.ssid)
-
-        # Already Saved from Setting
-        if savedcell:
-            savedcell.activate()
-            return cell
-
-        # First time to conenct
-        else:
-            if cell.encrypted:
-                if password:
-                    scheme = add(cell, password)
-
-                    try:
-                        scheme.activate()
-
-                    # Wrong Password
-                    except wifi.exceptions.ConnectionError:
-                        delete(ssid)
-                        return False
-                    return cell
-                else:
-                    return False
-            else:
-                scheme = add(cell)
-                try:
-                    scheme.activate()
-                except wifi.exceptions.ConnectionError:
-                    delete(ssid)
-                    return False
-                return cell
-    return False
-
-
-def add(cell, password=None):
-    if not cell:
-        return False
-
-    scheme = wifi.Scheme.for_cell('wlan0', cell.ssid, cell, password)
-    scheme.save()
-    return scheme
-
-
-def delete(ssid):
-    if not ssid:
-        return False
-
-    cell = find_from_saved_list(ssid)
-    if cell:
-        cell.delete()
-        return True
-    return False
+    def connection(self, ssid):
+        cmd = "iwconfig {} password {} iface {}".format(ssid, self.password, self.interface_name)
+        if os.system(cmd) != 0:
+            logger.info("Couldn't connect to ssid:{}".format(ssid))
+            raise Exception()
+        logger.info("Successfully connected to {}".format(ssid))
