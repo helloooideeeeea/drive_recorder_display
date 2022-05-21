@@ -21,7 +21,7 @@ class Wifi:
         return ssid in ssid_list
 
     def connection(self, ssid, password):
-        cmd = "iwconfig {} password {} iface {}".format(ssid, password, self.interface_name)
+        cmd = "iwconfig {} essid {} key {}".format(self.interface_name, ssid, password)
         if os.system(cmd) != 0:
             logger.info("Couldn't connect to ssid:{}".format(ssid))
             raise Exception()
