@@ -24,7 +24,7 @@ class VideoRecorder:
         self.isRunning = True
         self.device = device
 
-        self.video_filename = video_path(prefix)
+        self.file_path = video_path(prefix)
         self.video_cap = cv2.VideoCapture(self.device)
         self.video_cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
         self.video_cap.set(cv2.CAP_PROP_FRAME_WIDTH, sizex)
@@ -34,7 +34,7 @@ class VideoRecorder:
         w = self.video_cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         h = self.video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
-        self.video_out = cv2.VideoWriter(self.video_filename, cv2.VideoWriter_fourcc(*'MJPG'), self.fps, (int(w), int(h)))
+        self.video_out = cv2.VideoWriter(self.file_path, cv2.VideoWriter_fourcc(*'MJPG'), self.fps, (int(w), int(h)))
         # self.start_time = time.time()
 
     def record(self):
@@ -92,7 +92,7 @@ class AudioRecorder:
         self.frames_per_buffer = fpb
         self.channels = channels
         self.format = pyaudio.paInt16
-        self.audio_filename = audio_path('inside')
+        self.file_path = audio_path('inside')
         self.audio = pyaudio.PyAudio()
         self.stream = self.audio.open(format=self.format,
                                       channels=self.channels,
@@ -115,7 +115,7 @@ class AudioRecorder:
             self.stream.stop_stream()
             self.stream.close()
             self.audio.terminate()
-            waveFile = wave.open(self.audio_filename, 'wb')
+            waveFile = wave.open(self.file_path, 'wb')
             waveFile.setnchannels(self.channels)
             waveFile.setsampwidth(self.audio.get_sample_size(self.format))
             waveFile.setframerate(self.rate)
@@ -160,3 +160,13 @@ class Recorder:
         # Makes sure the threads have finished
         while threading.active_count() > 1:
             time.sleep(1)
+
+    def file_paths(self):
+        list = []
+        if self.inside_audio_thread is not None:
+            list.append(self.inside_audio_thread.file_path)
+        if self.inside_video_thread is not None:
+            list.append(self.inside_video_thread.file_path)
+        if self.outside_video_thread is not None:
+            list.append(self.outside_video_thread.file_path)
+        return list

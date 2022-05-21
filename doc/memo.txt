@@ -77,6 +77,12 @@ diskutil list
 diskutil umountDisk /dev/disk2
 sudo dd if=/dev/disk2 of=raspi-backup.img bs=1m
 
+network 切り替え
+
+wpa_cli -i wlan0 select_network aterm-ba29a9-a
+wpa_cli -i wlan0 select_network YSiPhoneXR
+wpa_cli -i wlan0 reconfigure
+
 SD書き込み
 diskutil list
 diskutil umountDisk /dev/disk4

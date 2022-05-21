@@ -7,6 +7,7 @@ import glob
 import math
 import os
 
+
 class FileSelectScene(Scene):
     PER_MOVIES_NUM = 6
     ITEM_HEIGHT = 50
@@ -17,7 +18,7 @@ class FileSelectScene(Scene):
     screen = None
     items = []
 
-    def __init__(self, window, data = None):
+    def __init__(self, window, data=None):
         if data is None:
             self.page = 1
         else:
@@ -49,7 +50,7 @@ class FileSelectScene(Scene):
         sorted_arr = sorted(arr, key=lambda x: x['video_date'], reverse=True)
 
         for index, file in enumerate(sorted_arr):
-            path = file['which']+'_'+file['video_date']+file["ext"]
+            path = file['which'] + '_' + file['video_date'] + file["ext"]
             surface, rect = self.create_item(index, path)
             items.append({"surface": surface, "rect": rect, "path": path})
 
@@ -66,20 +67,23 @@ class FileSelectScene(Scene):
         surface, font_size = UI.font_surface(text, 50)
         font_width = font_size[0]
 
-        return surface, Rect(WINDOW_WIDTH/2-font_width/2, self.MARGIN_MAIN_TOP + (index%self.PER_MOVIES_NUM * self.ITEM_HEIGHT), font_width + 20, self.ITEM_HEIGHT)
+        return surface, Rect(WINDOW_WIDTH / 2 - font_width / 2,
+                             self.MARGIN_MAIN_TOP + (index % self.PER_MOVIES_NUM * self.ITEM_HEIGHT), font_width + 20,
+                             self.ITEM_HEIGHT)
 
     def items_height(self):
         return self.MARGIN_MAIN_TOP + (self.PER_MOVIES_NUM * self.ITEM_HEIGHT) + self.MARGIN_TOP
 
     def pager_items(self):
-        return self.items[(self.page-1)*self.PER_MOVIES_NUM:(self.page-1)*self.PER_MOVIES_NUM + self.PER_MOVIES_NUM]
+        return self.items[
+               (self.page - 1) * self.PER_MOVIES_NUM:(self.page - 1) * self.PER_MOVIES_NUM + self.PER_MOVIES_NUM]
 
     def create_pager(self):
         pager_counts = self.page * self.PER_MOVIES_NUM
         movies_num = len(self.items)
         is_exist_next = pager_counts < movies_num
         is_exist_prev = self.page > 1
-        page_sum = math.ceil(movies_num/self.PER_MOVIES_NUM)
+        page_sum = math.ceil(movies_num / self.PER_MOVIES_NUM)
 
         next_surface = None
         next_rect = None
@@ -99,11 +103,10 @@ class FileSelectScene(Scene):
 
         pager_info_surface, font_size = UI.font_surface(f"{self.page} / {page_sum}", 50)
         font_width = font_size[0]
-        pager_info_rect = Rect(WINDOW_WIDTH/2 - font_width/2, self.items_height(), font_width+20, self.ITEM_HEIGHT)
+        pager_info_rect = Rect(WINDOW_WIDTH / 2 - font_width / 2, self.items_height(), font_width + 20,
+                               self.ITEM_HEIGHT)
 
         return pager_info_surface, pager_info_rect, next_surface, next_rect, prev_surface, prev_rect
-
-
 
     def loop(self):
         self.screen.fill((255, 255, 255))  # 背景色
@@ -123,7 +126,8 @@ class FileSelectScene(Scene):
             return
         for index, item_view in enumerate(self.items):
             if item_view["rect"].collidepoint(position):
-                self.window.switch_scene(MOVIE_SCENE_NAME, data={'path': self.pager_items()[index]['path'], 'page': self.page})
+                self.window.switch_scene(MOVIE_SCENE_NAME,
+                                         data={'path': self.pager_items()[index]['path'], 'page': self.page})
                 return
         if self.prev_rect is not None and self.prev_rect.collidepoint(position):
             self.page = self.page - 1
@@ -136,6 +140,3 @@ class FileSelectScene(Scene):
 
     def before_finish(self):
         pass
-
-
-

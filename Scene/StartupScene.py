@@ -2,8 +2,10 @@ import pygame
 from Scene import Scene
 from pygame.locals import *
 from Constraints import *
+from Library import data_dir, filter_able_path
 from Library.UI import UI
 from Library.Recorder import Recorder
+from Library.AWS import Aws
 
 
 class StartupScene(Scene):
@@ -30,6 +32,12 @@ class StartupScene(Scene):
             recoder = Recorder()
             recoder.start_AV_recording()
             self.window.set_recorder(recoder)
+
+            # 動画、音声ファイルをアップロード
+            exclude_paths = recoder.file_paths()
+            upload_file_paths = filter_able_path(data_dir(), exclude_paths)
+            Aws().process_s3_upload_files(upload_file_paths, Aws.DATA_DIR)
+
             self.window.switch_scene(CAMERA_SCENE_NAME)
 
     def click_notify(self, position):

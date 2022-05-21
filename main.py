@@ -1,4 +1,4 @@
-import sys
+import sys, os
 import pygame
 from pygame.locals import *
 from Constraints import *
@@ -7,8 +7,9 @@ from Scene.StartupScene import StartupScene
 from Scene.MovieScene import MovieScene
 from Scene.FileSelectScene import FileSelectScene
 from loguru import logger
-from Library import log_dir, ymd, is_debug
+from Library import log_dir, ymd, is_debug, jornal_log_path, filter_able_path
 from Library.Redis import Redis
+from Library.AWS import Aws
 
 
 class WindowLoop:
@@ -17,6 +18,7 @@ class WindowLoop:
     current_scene = None
     recorder = None
     redis = None
+    aws = None
 
     def __init__(self):
         pygame.init()  # 初期化
@@ -69,6 +71,20 @@ class WindowLoop:
         if self.recorder is not None:
             self.recorder.stop_AV_recording()
             # TODO AVI attach Audio
+
+        aws = Aws()
+        # Jornal Log 保存
+        jlp = jornal_log_path()
+        os.system(f"sudo journalctl -u my_app.service -S today > {jlp}")
+        aws.process_s3_upload_files([jlp], Aws.LOG_DIR)
+        # Application Log 保存
+        log_file_paths = filter_able_path(log_dir(), [])
+        aws.process_s3_upload_files(log_file_paths, Aws.LOG_DIR)
+        # プロセス終了待ち合わせ
+        for proc in aws.upload_process_list:
+            proc.join()
+
+        os.system('sudo shutdown -h now')
 
 
 def main():

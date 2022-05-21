@@ -1,4 +1,4 @@
-import random, string, os
+import random, string, os, glob
 import datetime
 from dotenv import load_dotenv
 load_dotenv()  # .env読込
@@ -41,6 +41,10 @@ def ymdhm():
     return now.strftime('%Y%m%d%H%M')
 
 
+def jornal_log_path():
+    return log_dir() + 'jornal_' + ymd() + '.log'
+
+
 def video_path(prefix):
     return data_dir() + prefix + '_' + ymdhm() + '.avi'
 
@@ -58,4 +62,12 @@ def create_video_path(prefix):
 
 def make_random_str(n=8):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=n))
+
+
+def filter_able_path(search_dir, exclude_file_paths):
+    files = glob.glob(search_dir + "*")
+    for efp in exclude_file_paths:
+        if efp in files:
+            files.remove(efp)
+    return files
 
