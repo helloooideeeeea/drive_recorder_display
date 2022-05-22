@@ -93,9 +93,10 @@ class AudioRecorder:
         self.channels = channels
         self.format = pyaudio.paInt16
         self.file_path = audio_path('inside')
-        # TODO 起動してすぐだとデバイスが見つからないみたい
-        time.sleep(3)
         self.audio = pyaudio.PyAudio()
+        for i in range(self.audio.get_device_count()):
+            logger.info(f"audio device: {self.audio.get_device_info_by_index(i)}")
+
         self.stream = self.audio.open(format=self.format,
                                       channels=self.channels,
                                       rate=self.rate,
