@@ -103,7 +103,7 @@ class AudioRecorder:
         if select_audio_device is not None:
             logger.info(f"Audio Device select index : {select_audio_device['index']}")
 
-            self.rate = select_audio_device['defaultSampleRate']
+            self.rate = int(select_audio_device['defaultSampleRate'])
             self.channels = select_audio_device['maxInputChannels']
             self.stream = self.audio.open(
                 input_device_index=select_audio_device['index'],
