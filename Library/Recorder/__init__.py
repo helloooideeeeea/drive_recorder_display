@@ -86,26 +86,27 @@ class VideoRecorder:
 
 class AudioRecorder:
 
-    def __init__(self, rate=44100, fpb=1024, channels=1):
+    def __init__(self, fpb=1024):
         self.isRunning = True
-        self.rate = rate
         self.frames_per_buffer = fpb
-        self.channels = channels
         self.format = pyaudio.paInt16
         self.file_path = audio_path('inside')
         self.audio = pyaudio.PyAudio()
-        audio_index = None
+        select_audio_device = None
         for i in range(self.audio.get_device_count()):
             ad = self.audio.get_device_info_by_index(i)
             logger.info(f"audio device: {self.audio.get_device_info_by_index(i)}")
-            if ad['maxInputChannels'] == 1:
-                audio_index = i
+            if ad['maxInputChannels'] == 2:
+                select_audio_device = ad
                 break
 
-        if audio_index is not None:
-            logger.info(f"Audio Device select index : {audio_index}")
+        if select_audio_device is not None:
+            logger.info(f"Audio Device select index : {select_audio_device['index']}")
+
+            self.rate = select_audio_device['defaultSampleRate']
+            self.channels = select_audio_device['maxInputChannels']
             self.stream = self.audio.open(
-                input_device_index=audio_index,
+                input_device_index=select_audio_device['index'],
                 format=self.format,
                 channels=self.channels,
                 rate=self.rate,
