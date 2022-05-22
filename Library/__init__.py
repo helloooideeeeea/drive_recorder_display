@@ -53,6 +53,10 @@ def audio_path(prefix):
     return data_dir() + prefix + '_' + ymdhm() + '.mp3'
 
 
+def app_log_path():
+    return log_dir() + "app_" + ymd() + '.log'
+
+
 def create_video_path(prefix):
     path = data_dir() + prefix + '/' + ymdhm()
 

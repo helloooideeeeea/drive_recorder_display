@@ -1,12 +1,12 @@
 import time
-from Library import log_dir, ymd
+from Library import app_log_path
 from loguru import logger
 from Library.UPS import UPS
 from Library.Redis import Redis
 
 
 def main():
-    logger.add(f'{log_dir()}watch_ups_{ymd()}.log')
+    logger.add(app_log_path())
     try:
         redis = Redis()
         ups = UPS()
@@ -20,6 +20,7 @@ def main():
                 counter = 0
             if counter >= 3:
                 # send message
+                logger.info("ups external power supply disconnect!")
                 redis.ups_publish()
 
             time.sleep(1)

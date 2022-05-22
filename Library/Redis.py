@@ -1,4 +1,5 @@
 import threading, os
+from loguru import logger
 import redis
 from dotenv import load_dotenv
 load_dotenv()  # .env読込

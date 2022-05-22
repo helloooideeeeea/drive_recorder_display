@@ -7,7 +7,7 @@ from Scene.StartupScene import StartupScene
 from Scene.MovieScene import MovieScene
 from Scene.FileSelectScene import FileSelectScene
 from loguru import logger
-from Library import log_dir, ymd, is_debug, jornal_log_path, filter_able_path
+from Library import app_log_path, log_dir, is_debug, jornal_log_path, filter_able_path
 from Library.Redis import Redis
 from Library.AWS import Aws
 
@@ -88,7 +88,7 @@ class WindowLoop:
 
 
 def main():
-    logger.add(f'{log_dir()}app_{ymd()}.log')
+    logger.add(app_log_path())
     wl = WindowLoop()
     wl.loop()
 
