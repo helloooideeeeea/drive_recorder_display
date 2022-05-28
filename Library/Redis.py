@@ -28,8 +28,7 @@ class Redis:
         ps = self.redis_instance.pubsub()
         ps.subscribe(self.UPS_CHANNEL_NAME)
         for message in ps.listen():
-            logger.info(f"redis subscribe message : {message}")
-            if message == self.UPS_REMOVE_EXTERNAL_POWER_SUPPLY_MESSAGE:
+            if message["data"] == self.UPS_REMOVE_EXTERNAL_POWER_SUPPLY_MESSAGE:
                 self.window.received_remove_external_power_supply_signal()
 
     def ups_publish(self):
